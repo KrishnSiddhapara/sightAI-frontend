@@ -34,7 +34,7 @@ const HeroSection = () => {
         fontWeight: 400,
         lineHeight: 1.6
       }}>
-        Upload an image and let Gemini analyze objects, people, attributes and the complete scene with zero hallucination.
+        Upload an image and let Gemini analyze objects, people, attributes and the complete scene.
       </p>
     </div>
   );
