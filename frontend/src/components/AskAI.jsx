@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import MarkdownView from './MarkdownView';
 
 const AskAI = ({
   qaHistory,
@@ -134,7 +135,7 @@ const AskAI = ({
                   <div style={{ fontSize: '0.75rem', color: 'var(--secondary)', fontWeight: 600, marginBottom: '0.25rem', uppercase: 'true' }}>
                     Gemini Vision AI
                   </div>
-                  {item.answer}
+                  <MarkdownView content={item.answer} collapsible={true} maxLength={300} />
                 </div>
               </div>
             ))}

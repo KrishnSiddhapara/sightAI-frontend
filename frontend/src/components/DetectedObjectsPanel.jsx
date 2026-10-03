@@ -22,10 +22,10 @@ const DetectedObjectsPanel = ({
   if (!categories || categories.length === 0) {
     return (
       <div className="card-glass" style={{ padding: '1.25rem' }}>
-        <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-subtle)', uppercase: 'true', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
+        <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-subtle)', uppercase: 'true', letterSpacing: '0.05em' }}>
           DETECTED OBJECTS
         </h4>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontStyle: 'italic' }}>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.5rem', fontStyle: 'italic' }}>
           No verified physical objects detected in this image.
         </p>
       </div>
@@ -34,16 +34,16 @@ const DetectedObjectsPanel = ({
 
   return (
     <div className="card-glass" style={{ padding: '1.25rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-        <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-muted)', uppercase: 'true', letterSpacing: '0.05em' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem' }}>
+        <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-subtle)', uppercase: 'true', letterSpacing: '0.05em' }}>
           DETECTED OBJECTS
         </h4>
         <span style={{ fontSize: '0.75rem', color: 'var(--text-subtle)' }}>
-          Select to locate
+          Select object to highlight
         </span>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
         {categories.map((cat) => {
           const isCategorySelected = selectedCategory?.toLowerCase() === cat.name.toLowerCase() && selectedInstance === null;
           const isExpanded = expandedCategories[cat.name] ?? false;
@@ -64,15 +64,8 @@ const DetectedObjectsPanel = ({
                 transition: 'all 0.15s ease'
               }}
             >
-              {/* Category Control Bar */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '0.65rem 0.85rem',
-                }}
-              >
+              {/* Category Bar */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.6rem 0.85rem' }}>
                 <button
                   type="button"
                   onClick={() => {
@@ -90,7 +83,7 @@ const DetectedObjectsPanel = ({
                     border: 'none',
                     color: '#F8FAFC',
                     cursor: 'pointer',
-                    fontSize: '0.95rem',
+                    fontSize: '0.9rem',
                     fontWeight: 600,
                     textTransform: 'capitalize',
                     flex: 1,
@@ -98,8 +91,8 @@ const DetectedObjectsPanel = ({
                   }}
                 >
                   <span style={{
-                    width: '8px',
-                    height: '8px',
+                    width: '7px',
+                    height: '7px',
                     borderRadius: '50%',
                     backgroundColor: isCategorySelected ? 'var(--primary)' : 'var(--text-subtle)'
                   }} />
@@ -108,7 +101,7 @@ const DetectedObjectsPanel = ({
                     background: 'var(--bg-secondary)',
                     border: '1px solid var(--border-color)',
                     color: isCategorySelected ? '#A5B4FC' : 'var(--text-muted)',
-                    padding: '1px 7px',
+                    padding: '1px 6px',
                     borderRadius: 'var(--radius-full)',
                     fontSize: '0.75rem',
                     fontWeight: 700
@@ -116,17 +109,12 @@ const DetectedObjectsPanel = ({
                     {cat.confirmed_count}
                   </span>
                   {cat.uncertain_count > 0 && (
-                    <span style={{
-                      color: 'var(--warning)',
-                      fontSize: '0.75rem',
-                      fontWeight: 600
-                    }}>
+                    <span style={{ color: 'var(--warning)', fontSize: '0.75rem', fontWeight: 600 }}>
                       (+{cat.uncertain_count} unconfirmed)
                     </span>
                   )}
                 </button>
 
-                {/* Expand Toggle Button for Instances */}
                 {instances.length > 0 && (
                   <button
                     type="button"
@@ -135,12 +123,11 @@ const DetectedObjectsPanel = ({
                       background: 'var(--bg-secondary)',
                       border: '1px solid var(--border-color)',
                       color: 'var(--text-muted)',
-                      padding: '2px 8px',
+                      padding: '2px 7px',
                       borderRadius: 'var(--radius-sm)',
                       fontSize: '0.75rem',
                       cursor: 'pointer'
                     }}
-                    aria-label={`Toggle instances for ${cat.name}`}
                   >
                     {isExpanded ? 'Hide' : `Instances (${instances.length})`}
                   </button>
@@ -150,12 +137,12 @@ const DetectedObjectsPanel = ({
               {/* Nested Instance Selection List */}
               {isExpanded && instances.length > 0 && (
                 <div style={{
-                  padding: '0.5rem 0.85rem 0.65rem 1.75rem',
+                  padding: '0.4rem 0.85rem 0.6rem 1.75rem',
                   borderTop: '1px solid var(--border-color)',
                   background: 'rgba(0, 0, 0, 0.15)',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '0.35rem'
+                  gap: '0.3rem'
                 }}>
                   {instances.map((inst) => {
                     const isInstanceSelected = selectedInstance === inst.id;
@@ -179,7 +166,7 @@ const DetectedObjectsPanel = ({
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          padding: '0.4rem 0.75rem',
+                          padding: '0.35rem 0.75rem',
                           borderRadius: 'var(--radius-sm)',
                           border: isInstanceSelected
                             ? '1px solid var(--secondary)'
@@ -189,7 +176,7 @@ const DetectedObjectsPanel = ({
                             : (isHovered ? 'var(--bg-secondary)' : 'transparent'),
                           color: isInstanceSelected ? '#DDD6FE' : 'var(--text-main)',
                           cursor: 'pointer',
-                          fontSize: '0.85rem',
+                          fontSize: '0.825rem',
                           textAlign: 'left',
                           transition: 'all 0.12s ease'
                         }}
@@ -197,10 +184,7 @@ const DetectedObjectsPanel = ({
                         <span style={{ fontFamily: 'var(--font-mono)' }}>
                           {inst.id}
                         </span>
-                        <span style={{
-                          fontSize: '0.7rem',
-                          color: hasBox ? 'var(--success)' : 'var(--text-subtle)'
-                        }}>
+                        <span style={{ fontSize: '0.7rem', color: hasBox ? 'var(--success)' : 'var(--text-subtle)' }}>
                           {hasBox ? 'Localized' : 'No bbox'}
                         </span>
                       </button>

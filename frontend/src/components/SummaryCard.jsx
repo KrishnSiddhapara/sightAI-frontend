@@ -1,4 +1,5 @@
 import React from 'react';
+import MarkdownView from './MarkdownView';
 
 const SummaryCard = ({ summary }) => {
   if (!summary) return null;
@@ -10,7 +11,7 @@ const SummaryCard = ({ summary }) => {
       borderLeft: '3px solid var(--primary)'
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
-        <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-muted)', uppercase: 'true', letterSpacing: '0.05em' }}>
+        <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-subtle)', uppercase: 'true', letterSpacing: '0.05em' }}>
           EXECUTIVE SUMMARY
         </h4>
         <span style={{
@@ -22,13 +23,7 @@ const SummaryCard = ({ summary }) => {
         </span>
       </div>
 
-      <p style={{
-        fontSize: '0.95rem',
-        color: '#F8FAFC',
-        lineHeight: 1.6,
-      }}>
-        {summary}
-      </p>
+      <MarkdownView content={summary} collapsible={true} maxLength={300} />
     </div>
   );
 };

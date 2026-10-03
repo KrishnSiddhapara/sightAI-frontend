@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 
 const ObjectInstanceCard = ({ category, selectedInstance = null, onSelectInstance = null }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
+  // Attributes closed by default per requirement 9
+  const [isExpanded, setIsExpanded] = useState(false);
 
   if (!category) return null;
 
@@ -13,14 +14,14 @@ const ObjectInstanceCard = ({ category, selectedInstance = null, onSelectInstanc
       background: 'var(--bg-surface)',
       border: '1px solid var(--border-color)',
       borderRadius: 'var(--radius-md)',
-      marginBottom: '1rem',
+      marginBottom: '0.85rem',
       overflow: 'hidden'
     }}>
       {/* Category Header */}
       <div
         onClick={() => setIsExpanded(!isExpanded)}
         style={{
-          padding: '0.85rem 1.25rem',
+          padding: '0.75rem 1.1rem',
           background: 'var(--bg-secondary)',
           display: 'flex',
           alignItems: 'center',
@@ -29,16 +30,13 @@ const ObjectInstanceCard = ({ category, selectedInstance = null, onSelectInstanc
           userSelect: 'none'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div>
-            <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#F8FAFC', textTransform: 'capitalize' }}>
-              {category.name}
-            </h4>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-              Confirmed: {category.confirmed_count}
-              {category.uncertain_count > 0 && ` (${category.uncertain_count} unconfirmed)`}
-            </span>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#F8FAFC', textTransform: 'capitalize' }}>
+            {category.name}
+          </h4>
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+            ({category.confirmed_count} confirmed{category.uncertain_count > 0 ? `, ${category.uncertain_count} unconfirmed` : ''})
+          </span>
         </div>
 
         <button
@@ -46,28 +44,28 @@ const ObjectInstanceCard = ({ category, selectedInstance = null, onSelectInstanc
           style={{
             background: 'none',
             border: 'none',
-            color: 'var(--text-muted)',
+            color: 'var(--primary)',
             cursor: 'pointer',
             fontSize: '0.8rem',
             fontWeight: 600
           }}
         >
-          {isExpanded ? 'Collapse' : 'Expand'}
+          {isExpanded ? 'Hide Details' : 'View Details'}
         </button>
       </div>
 
-      {/* Instance Content */}
+      {/* Instance Content - Collapsed by default */}
       {isExpanded && (
-        <div style={{ padding: '1.25rem' }}>
+        <div style={{ padding: '1rem' }}>
           {category.uncertain_count > 0 && (
             <div style={{
               background: 'var(--warning-bg)',
               border: '1px solid var(--warning-border)',
               borderRadius: 'var(--radius-sm)',
-              padding: '0.5rem 0.85rem',
+              padding: '0.45rem 0.75rem',
               color: '#FCD34D',
               fontSize: '0.8rem',
-              marginBottom: '1rem'
+              marginBottom: '0.85rem'
             }}>
               Note: {category.uncertain_count} additional instance(s) are partially occluded or unconfirmed.
             </div>
@@ -78,7 +76,7 @@ const ObjectInstanceCard = ({ category, selectedInstance = null, onSelectInstanc
               No individual instance attributes extracted.
             </p>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.85rem' }}>
               {instances.map((inst, idx) => {
                 const attr = inst.attributes || {};
                 const isSelected = selectedInstance === inst.id;
@@ -88,10 +86,10 @@ const ObjectInstanceCard = ({ category, selectedInstance = null, onSelectInstanc
                   <div
                     key={inst.id || idx}
                     style={{
-                      background: isSelected ? 'rgba(99, 102, 241, 0.12)' : 'rgba(15, 23, 42, 0.5)',
+                      background: isSelected ? 'rgba(99, 102, 241, 0.12)' : 'rgba(15, 23, 42, 0.4)',
                       border: isSelected ? '1px solid var(--primary)' : '1px solid var(--border-color)',
-                      borderRadius: 'var(--radius-md)',
-                      padding: '1rem',
+                      borderRadius: 'var(--radius-sm)',
+                      padding: '0.85rem',
                       transition: 'all 0.15s ease'
                     }}
                   >
@@ -99,12 +97,12 @@ const ObjectInstanceCard = ({ category, selectedInstance = null, onSelectInstanc
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      marginBottom: '0.75rem',
+                      marginBottom: '0.6rem',
                       borderBottom: '1px solid var(--border-color)',
-                      paddingBottom: '0.5rem'
+                      paddingBottom: '0.4rem'
                     }}>
                       <span style={{
-                        fontSize: '0.85rem',
+                        fontSize: '0.825rem',
                         fontWeight: 700,
                         color: isPerson ? '#A78BFA' : '#818CF8',
                         fontFamily: 'var(--font-mono)'
@@ -133,12 +131,12 @@ const ObjectInstanceCard = ({ category, selectedInstance = null, onSelectInstanc
                     </div>
 
                     {inst.uncertainty_reason && (
-                      <p style={{ fontSize: '0.8rem', color: '#FCD34D', marginBottom: '0.75rem' }}>
+                      <p style={{ fontSize: '0.78rem', color: '#FCD34D', marginBottom: '0.5rem' }}>
                         Uncertainty: {inst.uncertainty_reason}
                       </p>
                     )}
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.85rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.825rem' }}>
                       {isPerson ? (
                         <>
                           <div>
@@ -183,7 +181,7 @@ const ObjectInstanceCard = ({ category, selectedInstance = null, onSelectInstanc
                         </>
                       )}
 
-                      <div style={{ marginTop: '0.35rem', paddingTop: '0.35rem', borderTop: '1px solid rgba(255,255,255,0.05)', fontSize: '0.75rem', color: 'var(--text-subtle)' }}>
+                      <div style={{ marginTop: '0.25rem', paddingTop: '0.25rem', borderTop: '1px solid rgba(255,255,255,0.05)', fontSize: '0.75rem', color: 'var(--text-subtle)' }}>
                         Bounding Box: {hasBox ? `[${inst.bounding_box.x_min}, ${inst.bounding_box.y_min}, ${inst.bounding_box.x_max}, ${inst.bounding_box.y_max}]` : 'Unavailable'}
                       </div>
                     </div>
