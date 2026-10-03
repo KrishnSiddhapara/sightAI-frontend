@@ -1,11 +1,17 @@
 import React from 'react';
-import { Box, Users, MapPin, CheckCircle2 } from 'lucide-react';
 
 const StatsCards = ({ analysisData }) => {
   if (!analysisData) return null;
 
   const objects = analysisData.objects || [];
   const totalObjectsCount = objects.reduce((sum, cat) => sum + (cat.confirmed_count || 0), 0);
+
+  let localizedCount = 0;
+  objects.forEach(cat => {
+    (cat.instances || []).forEach(inst => {
+      if (inst.bounding_box) localizedCount++;
+    });
+  });
   
   const personCategories = objects.filter(cat => cat.name.toLowerCase() === 'person');
   const totalPeopleCount = personCategories.reduce((sum, cat) => sum + (cat.confirmed_count || 0), 0);
@@ -13,58 +19,36 @@ const StatsCards = ({ analysisData }) => {
   const sceneCategory = analysisData.scene?.category || 'General Scene';
 
   const stats = [
-    { label: 'Objects Verified', value: totalObjectsCount, icon: Box, color: '#6366F1' },
-    { label: 'People Count', value: totalPeopleCount, icon: Users, color: '#8B5CF6' },
-    { label: 'Scene Category', value: sceneCategory, icon: MapPin, color: '#10B981' },
-    { label: 'Analysis Status', value: 'Complete', icon: CheckCircle2, color: '#3B82F6' },
+    { label: 'Objects Verified', value: totalObjectsCount },
+    { label: 'Spatial Bounding Boxes', value: localizedCount },
+    { label: 'People Count', value: totalPeopleCount },
+    { label: 'Scene Category', value: sceneCategory },
   ];
 
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-      gap: '1.25rem',
-      marginBottom: '2rem'
+      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+      gap: '1rem',
+      marginBottom: '1.5rem'
     }}>
-      {stats.map((stat, i) => {
-        const Icon = stat.icon;
-        return (
-          <div
-            key={i}
-            className="card-glass"
-            style={{
-              padding: '1.25rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '1rem',
-              background: 'var(--bg-surface)'
-            }}
-          >
-            <div style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '12px',
-              background: `${stat.color}15`,
-              border: `1px solid ${stat.color}30`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: stat.color,
-              flexShrink: 0
-            }}>
-              <Icon size={24} />
-            </div>
-            <div>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500, display: 'block' }}>
-                {stat.label}
-              </span>
-              <span style={{ fontSize: '1.4rem', fontWeight: 800, color: '#F8FAFC', letterSpacing: '-0.02em' }}>
-                {stat.value}
-              </span>
-            </div>
-          </div>
-        );
-      })}
+      {stats.map((stat, i) => (
+        <div
+          key={i}
+          className="card-glass"
+          style={{
+            padding: '1rem 1.25rem',
+            background: 'var(--bg-surface)'
+          }}
+        >
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-subtle)', fontWeight: 600, uppercase: 'true', display: 'block', marginBottom: '0.25rem' }}>
+            {stat.label}
+          </span>
+          <span style={{ fontSize: '1.35rem', fontWeight: 800, color: '#F8FAFC', letterSpacing: '-0.02em' }}>
+            {stat.value}
+          </span>
+        </div>
+      ))}
     </div>
   );
 };

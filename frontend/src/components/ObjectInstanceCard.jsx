@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, User, Box, AlertCircle } from 'lucide-react';
 
-const ObjectInstanceCard = ({ category }) => {
+const ObjectInstanceCard = ({ category, selectedInstance = null, onSelectInstance = null }) => {
   const [isExpanded, setIsExpanded] = useState(true);
 
   if (!category) return null;
@@ -21,7 +20,7 @@ const ObjectInstanceCard = ({ category }) => {
       <div
         onClick={() => setIsExpanded(!isExpanded)}
         style={{
-          padding: '1rem 1.25rem',
+          padding: '0.85rem 1.25rem',
           background: 'var(--bg-secondary)',
           display: 'flex',
           alignItems: 'center',
@@ -31,51 +30,29 @@ const ObjectInstanceCard = ({ category }) => {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          {isPerson ? (
-            <div style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '8px',
-              background: 'rgba(139, 92, 246, 0.15)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#8B5CF6'
-            }}>
-              <User size={18} />
-            </div>
-          ) : (
-            <div style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '8px',
-              background: 'rgba(99, 102, 241, 0.15)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#6366F1'
-            }}>
-              <Box size={18} />
-            </div>
-          )}
           <div>
-            <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#F8FAFC', textTransform: 'capitalize' }}>
+            <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#F8FAFC', textTransform: 'capitalize' }}>
               {category.name}
             </h4>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-              Confirmed Count: {category.confirmed_count}
-              {category.uncertain_count > 0 && ` • (${category.uncertain_count} unconfirmed)`}
+              Confirmed: {category.confirmed_count}
+              {category.uncertain_count > 0 && ` (${category.uncertain_count} unconfirmed)`}
             </span>
           </div>
         </div>
 
-        <button style={{
-          background: 'none',
-          border: 'none',
-          color: 'var(--text-muted)',
-          cursor: 'pointer'
-        }}>
-          {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        <button
+          type="button"
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'var(--text-muted)',
+            cursor: 'pointer',
+            fontSize: '0.8rem',
+            fontWeight: 600
+          }}
+        >
+          {isExpanded ? 'Collapse' : 'Expand'}
         </button>
       </div>
 
@@ -87,16 +64,12 @@ const ObjectInstanceCard = ({ category }) => {
               background: 'var(--warning-bg)',
               border: '1px solid var(--warning-border)',
               borderRadius: 'var(--radius-sm)',
-              padding: '0.6rem 0.85rem',
+              padding: '0.5rem 0.85rem',
               color: '#FCD34D',
-              fontSize: '0.85rem',
-              marginBottom: '1rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem'
+              fontSize: '0.8rem',
+              marginBottom: '1rem'
             }}>
-              <AlertCircle size={16} />
-              <span>Note: {category.uncertain_count} additional instance(s) are partially occluded or unconfirmed.</span>
+              Note: {category.uncertain_count} additional instance(s) are partially occluded or unconfirmed.
             </div>
           )}
 
@@ -108,14 +81,18 @@ const ObjectInstanceCard = ({ category }) => {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
               {instances.map((inst, idx) => {
                 const attr = inst.attributes || {};
+                const isSelected = selectedInstance === inst.id;
+                const hasBox = !!inst.bounding_box;
+
                 return (
                   <div
                     key={inst.id || idx}
                     style={{
-                      background: 'rgba(15, 23, 42, 0.5)',
-                      border: '1px solid var(--border-color)',
+                      background: isSelected ? 'rgba(99, 102, 241, 0.12)' : 'rgba(15, 23, 42, 0.5)',
+                      border: isSelected ? '1px solid var(--primary)' : '1px solid var(--border-color)',
                       borderRadius: 'var(--radius-md)',
-                      padding: '1rem'
+                      padding: '1rem',
+                      transition: 'all 0.15s ease'
                     }}
                   >
                     <div style={{
@@ -134,15 +111,34 @@ const ObjectInstanceCard = ({ category }) => {
                       }}>
                         Instance {inst.id}
                       </span>
+
+                      {onSelectInstance && (
+                        <button
+                          type="button"
+                          onClick={() => onSelectInstance(inst.id, category.name)}
+                          style={{
+                            background: isSelected ? 'var(--primary)' : 'var(--bg-secondary)',
+                            border: '1px solid var(--border-color)',
+                            color: isSelected ? '#FFFFFF' : 'var(--text-muted)',
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            padding: '2px 8px',
+                            borderRadius: 'var(--radius-sm)',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {isSelected ? 'Selected' : 'View on Image'}
+                        </button>
+                      )}
                     </div>
 
                     {inst.uncertainty_reason && (
                       <p style={{ fontSize: '0.8rem', color: '#FCD34D', marginBottom: '0.75rem' }}>
-                        ⚠️ {inst.uncertainty_reason}
+                        Uncertainty: {inst.uncertainty_reason}
                       </p>
                     )}
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.875rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.85rem' }}>
                       {isPerson ? (
                         <>
                           <div>
@@ -186,6 +182,10 @@ const ObjectInstanceCard = ({ category }) => {
                           </div>
                         </>
                       )}
+
+                      <div style={{ marginTop: '0.35rem', paddingTop: '0.35rem', borderTop: '1px solid rgba(255,255,255,0.05)', fontSize: '0.75rem', color: 'var(--text-subtle)' }}>
+                        Bounding Box: {hasBox ? `[${inst.bounding_box.x_min}, ${inst.bounding_box.y_min}, ${inst.bounding_box.x_max}, ${inst.bounding_box.y_max}]` : 'Unavailable'}
+                      </div>
                     </div>
                   </div>
                 );

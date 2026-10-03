@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Sliders, Sparkles, RefreshCw, AlertCircle, Info, Layers } from 'lucide-react';
 
 const ImageEditor = ({
   versionHistory,
@@ -19,7 +18,7 @@ const ImageEditor = ({
     "Change person 1's shirt color to blue",
     "Remove the car from the background",
     "Replace background with a tropical beach",
-    "Add black sunglasses to the person",
+    "Add black sunglasses to person 1",
   ];
 
   const handlePromptClick = (promptText) => {
@@ -54,30 +53,27 @@ const ImageEditor = ({
     onGenerateEdit(instruction.trim());
   };
 
-  // Find source version object
-  const currentSourceRec = versionHistory.find(v => v.version_number === sourceVersionNum) || versionHistory[0];
-
   return (
-    <div className="card-glass" style={{ marginBottom: '2rem', padding: '1.75rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.25rem' }}>
-        <Sliders size={22} color="var(--primary)" />
-        <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#F8FAFC' }}>
-          ✨ AI Image Editor (Multi-Version)
+    <div className="card-glass" style={{ marginBottom: '2rem', padding: '1.5rem' }}>
+      <div style={{ marginBottom: '1.25rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+        <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#F8FAFC' }}>
+          AI Image Editor (Multi-Version)
         </h3>
+        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+          Instruct Gemini to modify, add, or remove objects with version control
+        </span>
       </div>
 
       {/* Select Base Version Dropdown */}
-      <div style={{ marginBottom: '1.5rem' }}>
+      <div style={{ marginBottom: '1.25rem' }}>
         <label style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.4rem',
-          fontSize: '0.9rem',
+          display: 'block',
+          fontSize: '0.85rem',
           fontWeight: 600,
           color: 'var(--text-muted)',
-          marginBottom: '0.5rem'
+          marginBottom: '0.4rem'
         }}>
-          <Layers size={16} color="var(--secondary)" /> Select Base Version to Edit:
+          Select Base Version to Edit:
         </label>
         <select
           value={sourceVersionNum}
@@ -93,16 +89,16 @@ const ImageEditor = ({
             </option>
           ))}
         </select>
-        <span style={{ fontSize: '0.8rem', color: 'var(--text-subtle)', marginTop: '0.35rem', display: 'block' }}>
-          Selected base image: <strong>Version {sourceVersionNum}</strong>. Each edit creates a new immutable version.
+        <span style={{ fontSize: '0.78rem', color: 'var(--text-subtle)', marginTop: '0.35rem', display: 'block' }}>
+          Selected base image: <strong>Version {sourceVersionNum}</strong>. Each edit creates a new version.
         </span>
       </div>
 
       {/* Form Input */}
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '1.25rem' }}>
-          <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#F8FAFC', marginBottom: '0.5rem' }}>
-            What would you like to change in the image?
+        <div style={{ marginBottom: '1rem' }}>
+          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#F8FAFC', marginBottom: '0.4rem' }}>
+            Edit Instruction
           </label>
           <input
             type="text"
@@ -111,9 +107,9 @@ const ImageEditor = ({
               setInstruction(e.target.value);
               checkAmbiguity(e.target.value);
             }}
-            placeholder="Describe what you want to change (e.g., Remove the car / Change shirt color to blue)..."
+            placeholder="e.g. Remove the car / Change person 1's shirt color to blue..."
             className="input-base"
-            style={{ fontSize: '1rem', padding: '0.85rem 1rem' }}
+            style={{ fontSize: '0.95rem', padding: '0.75rem 1rem' }}
             disabled={isEditing}
           />
         </div>
@@ -127,22 +123,18 @@ const ImageEditor = ({
             padding: '0.75rem 1rem',
             color: '#FCD34D',
             fontSize: '0.85rem',
-            marginBottom: '1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
+            marginBottom: '1rem',
           }}>
-            <Info size={16} shrink={0} />
             <span>{ambiguityWarning}</span>
           </div>
         )}
 
         {/* Example Prompt Chips */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: '0.5rem' }}>
-            💡 Quick Example Prompts:
+        <div style={{ marginBottom: '1.25rem' }}>
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-subtle)', fontWeight: 600, display: 'block', marginBottom: '0.5rem', uppercase: 'true' }}>
+            Quick Prompts:
           </span>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
             {examplePrompts.map((p, idx) => (
               <button
                 key={idx}
@@ -152,22 +144,14 @@ const ImageEditor = ({
                   background: 'var(--bg-secondary)',
                   border: '1px solid var(--border-color)',
                   borderRadius: 'var(--radius-full)',
-                  padding: '0.35rem 0.85rem',
+                  padding: '0.3rem 0.75rem',
                   color: 'var(--text-muted)',
                   fontSize: '0.8rem',
                   cursor: 'pointer',
                   transition: 'all 0.15s ease'
                 }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--primary)';
-                  e.currentTarget.style.color = '#F8FAFC';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--border-color)';
-                  e.currentTarget.style.color = 'var(--text-muted)';
-                }}
               >
-                + "{p}"
+                + {p}
               </button>
             ))}
           </div>
@@ -179,22 +163,16 @@ const ImageEditor = ({
             background: 'var(--danger-bg)',
             border: '1px solid var(--danger-border)',
             borderRadius: 'var(--radius-md)',
-            padding: '1rem',
+            padding: '0.85rem 1rem',
             color: '#FCA5A5',
-            marginBottom: '1.5rem',
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: '0.75rem'
+            marginBottom: '1.25rem',
           }}>
-            <AlertCircle size={20} shrink={0} color="#EF4444" style={{ marginTop: '2px' }} />
-            <div>
-              <strong style={{ display: 'block', color: '#F8FAFC', marginBottom: '0.2rem' }}>
-                Generated Edit Rejected by Safety Gate
-              </strong>
-              <span style={{ fontSize: '0.875rem' }}>
-                {editSafetyResult.error || 'The generated edit contained inappropriate or sensitive content and was discarded. Your previous versions remain safe and preserved.'}
-              </span>
-            </div>
+            <strong style={{ display: 'block', color: '#F8FAFC', marginBottom: '0.2rem', fontSize: '0.9rem' }}>
+              Generated Edit Rejected by Safety Gate
+            </strong>
+            <span style={{ fontSize: '0.85rem' }}>
+              {editSafetyResult.error || 'The generated edit contained inappropriate content and was discarded. Previous versions remain safe.'}
+            </span>
           </div>
         )}
 
@@ -203,17 +181,9 @@ const ImageEditor = ({
           type="submit"
           disabled={isEditing || !instruction.trim() || !apiConfigured}
           className="btn-primary"
-          style={{ width: '100%', padding: '0.85rem 1.5rem', fontSize: '1.05rem' }}
+          style={{ width: '100%', padding: '0.75rem 1.5rem', fontSize: '0.95rem' }}
         >
-          {isEditing ? (
-            <>
-              <RefreshCw size={20} className="animate-spin" /> Generating Edit & Screening Safety...
-            </>
-          ) : (
-            <>
-              <Sparkles size={20} /> Generate Edit
-            </>
-          )}
+          {isEditing ? 'Generating Edit & Screening Safety...' : 'Generate Edit'}
         </button>
       </form>
     </div>

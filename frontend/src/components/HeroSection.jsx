@@ -1,40 +1,37 @@
 import React from 'react';
-import { Sparkles } from 'lucide-react';
 
 const HeroSection = () => {
   return (
     <div style={{
       textAlign: 'center',
-      padding: '2.5rem 1rem 1.5rem 1rem',
-      maxWidth: '800px',
+      padding: '2rem 1rem 1.5rem 1rem',
+      maxWidth: '720px',
       margin: '0 auto'
     }}>
-      <div style={{ display: 'inline-flex', marginBottom: '1rem' }}>
-        <span className="badge-pill badge-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
-          <Sparkles size={14} /> AI Vision Analysis
+      <div style={{ display: 'inline-flex', marginBottom: '0.85rem' }}>
+        <span className="badge-pill badge-primary">
+          INTERACTIVE COMPUTER VISION
         </span>
       </div>
       
       <h1 style={{
-        fontSize: '2.75rem',
+        fontSize: '2.4rem',
         fontWeight: 800,
-        lineHeight: 1.15,
-        marginBottom: '1rem',
-        background: 'linear-gradient(135deg, #F8FAFC 0%, #A5B4FC 50%, #C084FC 100%)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
+        lineHeight: 1.2,
+        marginBottom: '0.75rem',
+        color: '#F8FAFC',
         letterSpacing: '-0.03em'
       }}>
-        Understand what's inside your image.
+        Precision Object Identification & Visual Spatial Grounding
       </h1>
 
       <p style={{
-        fontSize: '1.1rem',
+        fontSize: '1.05rem',
         color: 'var(--text-muted)',
         fontWeight: 400,
-        lineHeight: 1.6
+        lineHeight: 1.5
       }}>
-        Upload an image and let Gemini analyze objects, people, attributes and the complete scene.
+        Upload an image to perform grounded physical instance verification, spatial bounding box localization, multi-version editing, and visual query processing.
       </p>
     </div>
   );

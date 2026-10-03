@@ -4,11 +4,7 @@ import HeroSection from './components/HeroSection';
 import ImageUploader from './components/ImageUploader';
 import AnalysisProgress from './components/AnalysisProgress';
 import SafetyStatus from './components/SafetyStatus';
-import StatsCards from './components/StatsCards';
-import ObjectList from './components/ObjectList';
-import ObjectInstanceCard from './components/ObjectInstanceCard';
-import SceneCard from './components/SceneCard';
-import SummaryCard from './components/SummaryCard';
+import AnalysisWorkspace from './components/AnalysisWorkspace';
 import ImageEditor from './components/ImageEditor';
 import VersionHistory from './components/VersionHistory';
 import ImageComparison from './components/ImageComparison';
@@ -16,7 +12,6 @@ import AskAI from './components/AskAI';
 import EmptyState from './components/EmptyState';
 
 import { getHealth, analyzeImage, editImage, askQuestion, exportImage } from './services/api';
-import { Eye, Layers, Sliders, MessageSquare, History, AlertCircle, CheckCircle2, Download } from 'lucide-react';
 
 function App() {
   const [activeTab, setActiveTab] = useState('analyze'); // 'analyze' | 'edit' | 'ask' | 'history'
@@ -139,7 +134,7 @@ function App() {
     setProgressStep('understanding');
 
     try {
-      // Step 4: Verifying objects
+      // Step 4: Verifying objects & bounding boxes
       setProgressStep('verifying');
       const res = await analyzeImage(selectedFile);
 
@@ -285,18 +280,15 @@ function App() {
             background: 'var(--danger-bg)',
             border: '1px solid var(--danger-border)',
             borderRadius: 'var(--radius-md)',
-            padding: '1rem 1.25rem',
+            padding: '0.85rem 1.1rem',
             color: '#FCA5A5',
             marginBottom: '1.5rem',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            fontSize: '0.95rem'
+            fontSize: '0.9rem'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <AlertCircle size={20} shrink={0} />
-              <span>{globalError}</span>
-            </div>
+            <span>{globalError}</span>
             <button
               onClick={() => setGlobalError(null)}
               style={{ background: 'none', border: 'none', color: '#FCA5A5', cursor: 'pointer', fontWeight: 700 }}
@@ -335,72 +327,10 @@ function App() {
                 {!analysisResult ? (
                   <EmptyState type="pending_analysis" onAction={handleAnalyze} />
                 ) : (
-                  <div>
-                    {/* Summary Stat Counters */}
-                    <StatsCards analysisData={analysisResult} />
-
-                    {/* Desktop Two-Column Layout */}
-                    <div className="grid-2">
-                      {/* Left: Image Preview Card */}
-                      <div className="card-glass" style={{ padding: '1.5rem', height: 'fit-content' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                          <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#F8FAFC' }}>
-                            📷 Input Image
-                          </h3>
-                          <span style={{ fontSize: '0.8rem', color: 'var(--success)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <CheckCircle2 size={14} /> Safety Passed
-                          </span>
-                        </div>
-                        <div style={{
-                          maxHeight: '450px',
-                          borderRadius: 'var(--radius-md)',
-                          overflow: 'hidden',
-                          background: '#000000',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          border: '1px solid var(--border-color)'
-                        }}>
-                          <img
-                            src={imagePreview}
-                            alt="Analysis subject"
-                            style={{ maxWidth: '100%', maxHeight: '450px', objectFit: 'contain' }}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Right: AI Summary & Objects Detected */}
-                      <div>
-                        <SummaryCard summary={analysisResult.overall_summary} />
-
-                        <div className="card-glass" style={{ padding: '1.5rem' }}>
-                          <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#F8FAFC', marginBottom: '0.75rem' }}>
-                            🎯 Verified Objects Detected
-                          </h3>
-                          <ObjectList categories={analysisResult.objects} />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Scene Understanding Card */}
-                    <div style={{ marginTop: '1.5rem' }}>
-                      <SceneCard scene={analysisResult.scene} />
-                    </div>
-
-                    {/* Object Instance Details Section */}
-                    <div style={{ marginTop: '1.5rem' }}>
-                      <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#F8FAFC', marginBottom: '1rem' }}>
-                        🔍 Object Details & Independent Instances
-                      </h3>
-                      {analysisResult.objects && analysisResult.objects.length > 0 ? (
-                        analysisResult.objects.map((cat, i) => (
-                          <ObjectInstanceCard key={i} category={cat} />
-                        ))
-                      ) : (
-                        <p style={{ color: 'var(--text-muted)' }}>No detailed object instances found.</p>
-                      )}
-                    </div>
-                  </div>
+                  <AnalysisWorkspace
+                    analysisResult={analysisResult}
+                    imagePreview={imagePreview}
+                  />
                 )}
               </div>
             )}
@@ -472,15 +402,15 @@ function App() {
       {/* Footer */}
       <footer style={{
         borderTop: '1px solid var(--border-color)',
-        padding: '2rem 1.5rem',
+        padding: '1.5rem',
         textAlign: 'center',
         color: 'var(--text-subtle)',
-        fontSize: '0.85rem',
+        fontSize: '0.8rem',
         marginTop: '3rem',
-        background: 'rgba(11, 15, 25, 0.95)'
+        background: 'rgba(11, 15, 23, 0.95)'
       }}>
         <div style={{ maxWidth: '1320px', margin: '0 auto' }}>
-          Built with React • Vite • FastAPI • Gemini Vision VLM & Multi-Version AI Image Editor
+          SightAI — Enterprise Multimodal Vision & Grounded Object Detection System
         </div>
       </footer>
     </div>

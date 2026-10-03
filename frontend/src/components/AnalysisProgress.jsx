@@ -1,12 +1,11 @@
 import React from 'react';
-import { CheckCircle2, Loader2, Circle } from 'lucide-react';
 
 const AnalysisProgress = ({ currentStep }) => {
   const steps = [
     { id: 'validating', label: 'Validating image' },
     { id: 'safety', label: 'Safety screening' },
-    { id: 'understanding', label: 'Understanding image' },
-    { id: 'verifying', label: 'Verifying objects & counts' },
+    { id: 'understanding', label: 'Visual understanding' },
+    { id: 'verifying', label: 'Object verification & bounding box extraction' },
     { id: 'preparing', label: 'Preparing results' },
   ];
 
@@ -19,21 +18,21 @@ const AnalysisProgress = ({ currentStep }) => {
 
   return (
     <div className="card-glass" style={{
-      maxWidth: '600px',
+      maxWidth: '560px',
       margin: '0 auto 2rem auto',
-      padding: '1.75rem',
-      background: 'rgba(17, 24, 39, 0.95)',
-      borderColor: 'rgba(99, 102, 241, 0.4)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
+      padding: '1.5rem',
+      background: 'var(--bg-surface)',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
-        <Loader2 size={22} className="animate-spin" color="var(--primary)" />
-        <h4 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#F8FAFC' }}>
-          Analyzing Image...
+      <div style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+        <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#F8FAFC' }}>
+          Analyzing Image
         </h4>
+        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+          Processing with Gemini Grounded Vision Model
+        </span>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
         {steps.map((step, idx) => {
           const status = getStepStatus(idx);
           return (
@@ -42,17 +41,18 @@ const AnalysisProgress = ({ currentStep }) => {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.85rem',
-                fontSize: '0.95rem',
+                justifyContent: 'space-between',
+                fontSize: '0.9rem',
                 color: status === 'completed' ? '#6EE7B7' : status === 'active' ? '#A5B4FC' : 'var(--text-subtle)',
                 fontWeight: status === 'active' ? 600 : 400,
-                transition: 'all 0.2s ease'
               }}
             >
-              {status === 'completed' && <CheckCircle2 size={18} color="var(--success)" />}
-              {status === 'active' && <Loader2 size={18} className="animate-spin" color="var(--primary)" />}
-              {status === 'pending' && <Circle size={18} color="var(--border-hover)" />}
               <span>{step.label}</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}>
+                {status === 'completed' && '✓'}
+                {status === 'active' && '●'}
+                {status === 'pending' && '○'}
+              </span>
             </div>
           );
         })}

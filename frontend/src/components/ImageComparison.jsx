@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Columns, Eye, SlidersHorizontal } from 'lucide-react';
 
 const ImageComparison = ({ originalImage, activeVersion }) => {
   const [sliderPos, setSliderPos] = useState(50);
-  const [viewMode, setViewMode] = useState('side-by-side'); // 'side-by-side' or 'slider'
+  const [viewMode, setViewMode] = useState('side-by-side');
 
   if (!activeVersion) return null;
 
@@ -11,17 +10,19 @@ const ImageComparison = ({ originalImage, activeVersion }) => {
   const isOriginalActive = activeVersion.version_number === 0;
 
   return (
-    <div className="card-glass" style={{ marginBottom: '2rem', padding: '1.75rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <Columns size={20} color="var(--primary)" />
+    <div className="card-glass" style={{ marginBottom: '2rem', padding: '1.5rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+        <div>
           <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#F8FAFC' }}>
-            Original vs Active Result Comparison
+            Image Comparison
           </h3>
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+            Compare original upload against active edited version
+          </span>
         </div>
 
         {!isOriginalActive && (
-          <div style={{ display: 'flex', gap: '0.35rem', background: 'var(--bg-secondary)', padding: '0.25rem', borderRadius: 'var(--radius-full)' }}>
+          <div style={{ display: 'flex', gap: '0.25rem', background: 'var(--bg-surface)', padding: '0.25rem', borderRadius: 'var(--radius-full)', border: '1px solid var(--border-color)' }}>
             <button
               onClick={() => setViewMode('side-by-side')}
               style={{
@@ -50,7 +51,7 @@ const ImageComparison = ({ originalImage, activeVersion }) => {
                 cursor: 'pointer'
               }}
             >
-              Interactive Slider
+              Slider Overlay
             </button>
           </div>
         )}
@@ -59,8 +60,8 @@ const ImageComparison = ({ originalImage, activeVersion }) => {
       {viewMode === 'side-by-side' || isOriginalActive ? (
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: '1.5rem'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '1.25rem'
         }}>
           {/* LEFT: Original Upload */}
           <div style={{
@@ -71,13 +72,13 @@ const ImageComparison = ({ originalImage, activeVersion }) => {
             textAlign: 'center'
           }}>
             <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#A5B4FC', marginBottom: '0.75rem' }}>
-              📷 Original Image (Version 0)
+              Original Image (Version 0)
             </div>
             <div style={{
               height: '320px',
               borderRadius: 'var(--radius-sm)',
               overflow: 'hidden',
-              background: '#000000',
+              background: '#070A11',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
@@ -99,13 +100,13 @@ const ImageComparison = ({ originalImage, activeVersion }) => {
             textAlign: 'center'
           }}>
             <div style={{ fontSize: '0.85rem', fontWeight: 700, color: isOriginalActive ? '#A5B4FC' : '#6EE7B7', marginBottom: '0.75rem' }}>
-              {isOriginalActive ? '🖼️ Active Image (Version 0 - Original)' : `✨ Active Result (Version ${activeVersion.version_number}: "${activeVersion.edit_prompt}")`}
+              {isOriginalActive ? 'Active Image (Version 0)' : `Active Result (Version ${activeVersion.version_number}: "${activeVersion.edit_prompt}")`}
             </div>
             <div style={{
               height: '320px',
               borderRadius: 'var(--radius-sm)',
               overflow: 'hidden',
-              background: '#000000',
+              background: '#070A11',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
@@ -124,10 +125,10 @@ const ImageComparison = ({ originalImage, activeVersion }) => {
           <div style={{
             position: 'relative',
             width: '100%',
-            height: '400px',
+            height: '380px',
             overflow: 'hidden',
             borderRadius: 'var(--radius-md)',
-            background: '#000000',
+            background: '#070A11',
             userSelect: 'none'
           }}>
             {/* Active Image (Bottom Layer) */}
@@ -172,7 +173,7 @@ const ImageComparison = ({ originalImage, activeVersion }) => {
               left: '10px',
               background: 'rgba(0,0,0,0.7)',
               color: '#FFF',
-              padding: '4px 10px',
+              padding: '3px 8px',
               borderRadius: '4px',
               fontSize: '0.75rem',
               fontWeight: 600
@@ -186,7 +187,7 @@ const ImageComparison = ({ originalImage, activeVersion }) => {
               right: '10px',
               background: 'rgba(0,0,0,0.7)',
               color: '#6EE7B7',
-              padding: '4px 10px',
+              padding: '3px 8px',
               borderRadius: '4px',
               fontSize: '0.75rem',
               fontWeight: 600

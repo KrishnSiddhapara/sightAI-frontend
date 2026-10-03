@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
-import { Eye, Sparkles, Sliders, MessageSquare, History, Menu, X, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const Navbar = ({ activeTab, setActiveTab, apiConnected, apiConfigured }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { id: 'analyze', label: 'Analyze', icon: Eye },
-    { id: 'edit', label: 'AI Editor', icon: Sliders },
-    { id: 'ask', label: 'Ask AI', icon: MessageSquare },
-    { id: 'history', label: 'Version History', icon: History },
+    { id: 'analyze', label: 'Analyze' },
+    { id: 'edit', label: 'AI Editor' },
+    { id: 'ask', label: 'Ask AI' },
+    { id: 'history', label: 'Version History' },
   ];
 
   return (
@@ -16,10 +15,10 @@ const Navbar = ({ activeTab, setActiveTab, apiConnected, apiConfigured }) => {
       position: 'sticky',
       top: 0,
       zIndex: 50,
-      background: 'rgba(11, 15, 25, 0.85)',
+      background: 'rgba(11, 15, 23, 0.9)',
       backdropFilter: 'blur(16px)',
       borderBottom: '1px solid var(--border-color)',
-      padding: '0.85rem 1.5rem',
+      padding: '0.75rem 1.5rem',
     }}>
       <div style={{
         maxWidth: '1320px',
@@ -28,39 +27,43 @@ const Navbar = ({ activeTab, setActiveTab, apiConnected, apiConfigured }) => {
         alignItems: 'center',
         justifyContent: 'space-between',
       }}>
-        {/* Brand Logo & Tagline */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        {/* Brand Logo & Title */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
           <div style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '12px',
-            background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
+            width: '36px',
+            height: '36px',
+            borderRadius: '8px',
+            background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(99, 102, 241, 0.4)'
+            color: '#FFFFFF',
+            fontWeight: 800,
+            fontSize: '1rem',
+            letterSpacing: '-0.03em'
           }}>
-            <Sparkles size={22} color="#FFFFFF" />
+            AI
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ fontWeight: 800, fontSize: '1.25rem', letterSpacing: '-0.02em', color: '#F8FAFC' }}>
-                AI Image Object Identifier
+              <span style={{ fontWeight: 700, fontSize: '1.15rem', letterSpacing: '-0.02em', color: '#F8FAFC' }}>
+                SightAI
               </span>
               <span style={{
-                background: 'rgba(99, 102, 241, 0.15)',
-                border: '1px solid rgba(99, 102, 241, 0.3)',
+                background: 'rgba(99, 102, 241, 0.12)',
+                border: '1px solid rgba(99, 102, 241, 0.25)',
                 color: '#A5B4FC',
-                padding: '2px 8px',
-                borderRadius: '9999px',
+                padding: '1px 7px',
+                borderRadius: 'var(--radius-full)',
                 fontSize: '0.7rem',
-                fontWeight: 700
+                fontWeight: 600,
+                fontFamily: 'var(--font-mono)'
               }}>
-                VLM v2.5
+                Enterprise Vision
               </span>
             </div>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'block' }}>
-              Understand, analyze, edit & interact with images using AI
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'block' }}>
+              Multimodal image analysis & grounded object detection
             </span>
           </div>
         </div>
@@ -69,37 +72,31 @@ const Navbar = ({ activeTab, setActiveTab, apiConnected, apiConfigured }) => {
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '0.35rem',
+          gap: '0.25rem',
           background: 'var(--bg-surface)',
           border: '1px solid var(--border-color)',
           borderRadius: 'var(--radius-full)',
-          padding: '0.3rem',
+          padding: '0.25rem',
         }} className="desktop-nav">
           {navItems.map((item) => {
-            const Icon = item.icon;
             const isActive = activeTab === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  padding: '0.45rem 1.1rem',
+                  padding: '0.45rem 1.15rem',
                   borderRadius: 'var(--radius-full)',
                   border: 'none',
-                  background: isActive ? 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)' : 'transparent',
+                  background: isActive ? 'var(--primary)' : 'transparent',
                   color: isActive ? '#FFFFFF' : 'var(--text-muted)',
                   fontWeight: isActive ? 600 : 500,
                   fontSize: '0.875rem',
                   cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  boxShadow: isActive ? '0 2px 10px rgba(99, 102, 241, 0.3)' : 'none'
+                  transition: 'all 0.15s ease',
                 }}
               >
-                <Icon size={16} />
-                <span>{item.label}</span>
+                {item.label}
               </button>
             );
           })}
@@ -110,23 +107,23 @@ const Navbar = ({ activeTab, setActiveTab, apiConnected, apiConfigured }) => {
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.35rem 0.85rem',
+            gap: '0.45rem',
+            padding: '0.3rem 0.75rem',
             borderRadius: 'var(--radius-full)',
             background: apiConnected ? (apiConfigured ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)') : 'rgba(239, 68, 68, 0.1)',
-            border: `1px solid ${apiConnected ? (apiConfigured ? 'rgba(16, 185, 129, 0.3)' : 'rgba(245, 158, 11, 0.3)') : 'rgba(239, 68, 68, 0.3)'}`,
-            fontSize: '0.8rem',
+            border: `1px solid ${apiConnected ? (apiConfigured ? 'rgba(16, 185, 129, 0.25)' : 'rgba(245, 158, 11, 0.25)') : 'rgba(239, 68, 68, 0.25)'}`,
+            fontSize: '0.78rem',
             fontWeight: 500,
             color: apiConnected ? (apiConfigured ? '#6EE7B7' : '#FCD34D') : '#FCA5A5'
           }}>
             <span style={{
-              width: '8px',
-              height: '8px',
+              width: '7px',
+              height: '7px',
               borderRadius: '50%',
               backgroundColor: apiConnected ? (apiConfigured ? '#10B981' : '#F59E0B') : '#EF4444',
             }} className="animate-pulse" />
             <span>
-              {apiConnected ? (apiConfigured ? 'Gemini API Ready' : 'API Key Required') : 'Backend Offline'}
+              {apiConnected ? (apiConfigured ? 'System Active' : 'API Key Missing') : 'Backend Offline'}
             </span>
           </div>
 
@@ -137,14 +134,15 @@ const Navbar = ({ activeTab, setActiveTab, apiConnected, apiConfigured }) => {
               background: 'var(--bg-secondary)',
               border: '1px solid var(--border-color)',
               borderRadius: 'var(--radius-md)',
-              padding: '0.5rem',
+              padding: '0.4rem 0.75rem',
               color: 'var(--text-main)',
+              fontSize: '0.85rem',
               cursor: 'pointer'
             }}
             className="mobile-nav-toggle"
             aria-label="Toggle Navigation Menu"
           >
-            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            {mobileMenuOpen ? 'Close' : 'Menu'}
           </button>
         </div>
       </div>
@@ -152,15 +150,14 @@ const Navbar = ({ activeTab, setActiveTab, apiConnected, apiConfigured }) => {
       {/* Mobile Nav Dropdown */}
       {mobileMenuOpen && (
         <div style={{
-          marginTop: '0.85rem',
-          paddingTop: '0.85rem',
+          marginTop: '0.75rem',
+          paddingTop: '0.75rem',
           borderTop: '1px solid var(--border-color)',
           display: 'flex',
           flexDirection: 'column',
-          gap: '0.5rem'
+          gap: '0.4rem'
         }}>
           {navItems.map((item) => {
-            const Icon = item.icon;
             const isActive = activeTab === item.id;
             return (
               <button
@@ -170,22 +167,18 @@ const Navbar = ({ activeTab, setActiveTab, apiConnected, apiConfigured }) => {
                   setMobileMenuOpen(false);
                 }}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                  padding: '0.75rem 1rem',
+                  padding: '0.65rem 1rem',
                   borderRadius: 'var(--radius-md)',
                   border: 'none',
-                  background: isActive ? 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)' : 'var(--bg-surface)',
+                  background: isActive ? 'var(--primary)' : 'var(--bg-surface)',
                   color: isActive ? '#FFFFFF' : 'var(--text-muted)',
                   fontWeight: 600,
-                  fontSize: '0.95rem',
+                  fontSize: '0.9rem',
                   textAlign: 'left',
                   cursor: 'pointer'
                 }}
               >
-                <Icon size={18} />
-                <span>{item.label}</span>
+                {item.label}
               </button>
             );
           })}
@@ -195,7 +188,7 @@ const Navbar = ({ activeTab, setActiveTab, apiConnected, apiConfigured }) => {
       <style>{`
         @media (max-width: 850px) {
           .desktop-nav { display: none !important; }
-          .mobile-nav-toggle { display: flex !important; }
+          .mobile-nav-toggle { display: block !important; }
         }
       `}</style>
     </nav>
