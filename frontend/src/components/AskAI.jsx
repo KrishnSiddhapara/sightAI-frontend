@@ -13,11 +13,11 @@ const AskAI = ({
   const [question, setQuestion] = useState('');
 
   const quickQuestions = [
-    "Where can I purchase this book / product?",
+    "Where can I purchase this item / book?",
     "What is the current price and availability?",
-    "What is the official website or publisher?",
-    "What color is the object in this image?",
-    "Who is the author or manufacturer?"
+    "What processor & technical specs does it have?",
+    "Compare this product with alternatives",
+    "What color is the object in this image?"
   ];
 
   const handleSubmit = (e) => {
@@ -35,11 +35,11 @@ const AskAI = ({
     <div className="card-glass" style={{ marginBottom: '2rem', padding: '1.5rem' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
         <div>
-          <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#F8FAFC' }}>
+          <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-main)' }}>
             AI Research Agent & Visual Q&A
           </h3>
           <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Answers visual questions or researches external purchase options, current prices, and official sources
+            Answers visual queries or researches live market prices, technical specs, purchase options, and verified web sources
           </span>
         </div>
 
@@ -76,7 +76,7 @@ const AskAI = ({
             type="text"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Ask anything (e.g. Where can I purchase this book? / What color is the shirt?)..."
+            placeholder="Ask anything (e.g. Where can I purchase this? / What is its price? / Compare with iPhone 17)..."
             className="input-base"
             style={{ flex: 1, minWidth: '260px' }}
             disabled={isAsking}
@@ -95,7 +95,7 @@ const AskAI = ({
       {/* Quick Questions Chips */}
       <div style={{ marginBottom: '1.5rem' }}>
         <span style={{ fontSize: '0.78rem', color: 'var(--text-subtle)', fontWeight: 600, display: 'block', marginBottom: '0.5rem', uppercase: 'true' }}>
-          Suggested Research Prompts:
+          Suggested Prompts:
         </span>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
           {quickQuestions.map((q, idx) => (
@@ -123,21 +123,21 @@ const AskAI = ({
       {/* Research Loading State Indicator */}
       {isAsking && (
         <div style={{
-          background: 'rgba(99, 102, 241, 0.08)',
-          border: '1px solid rgba(99, 102, 241, 0.25)',
+          background: 'var(--primary-glow)',
+          border: '1px solid var(--border-color)',
           borderRadius: 'var(--radius-md)',
           padding: '1rem 1.25rem',
           marginBottom: '1.25rem',
           fontSize: '0.875rem'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#A5B4FC', fontWeight: 600, marginBottom: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)', fontWeight: 600, marginBottom: '0.5rem' }}>
             <span className="animate-pulse" style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)' }} />
-            Researching your question...
+            Autonomous AI Agent Researching...
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            <span>✓ Analyzing visual context & entity intent</span>
-            <span>● Searching external web sources & checking availability</span>
-            <span>○ Synthesizing grounded response with verified links</span>
+            <span>✓ Classifying intent & resolving entity references</span>
+            <span>● Searching multi-source web evidence & checking live availability</span>
+            <span>○ Synthesizing grounded response with verified citations</span>
           </div>
         </div>
       )}
@@ -157,6 +157,7 @@ const AskAI = ({
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {qaHistory.map((item, idx) => {
               const isResearched = item.requires_research;
+              const intentTag = item.intent ? item.intent.replace(/_/g, ' ') : (isResearched ? 'WEB RESEARCH' : 'VISUAL ANALYSIS');
               
               return (
                 <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -174,32 +175,32 @@ const AskAI = ({
                     {item.question}
                   </div>
 
-                  {/* AI Answer */}
+                  {/* AI Answer Card */}
                   <div style={{
                     alignSelf: 'flex-start',
                     maxWidth: '92%',
                     width: '100%',
                     background: 'var(--bg-surface)',
                     border: '1px solid var(--border-color)',
-                    color: '#F8FAFC',
+                    color: 'var(--text-main)',
                     padding: '1rem',
                     borderRadius: 'var(--radius-md)',
-                    borderLeft: `3px solid ${isResearched ? '#10B981' : 'var(--secondary)'}`,
+                    borderLeft: `3px solid ${isResearched ? 'var(--success)' : 'var(--secondary)'}`,
                     fontSize: '0.9rem',
                     lineHeight: 1.65
                   }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                       <span style={{
                         fontSize: '0.72rem',
-                        color: isResearched ? '#6EE7B7' : '#A78BFA',
+                        color: isResearched ? 'var(--success)' : 'var(--secondary)',
                         fontWeight: 700,
-                        uppercase: 'true',
-                        background: isResearched ? 'rgba(16, 185, 129, 0.12)' : 'rgba(139, 92, 246, 0.12)',
+                        textTransform: 'uppercase',
+                        background: isResearched ? 'var(--success-bg)' : 'var(--primary-glow)',
                         padding: '1px 7px',
                         borderRadius: 'var(--radius-full)',
-                        border: `1px solid ${isResearched ? 'rgba(16, 185, 129, 0.25)' : 'rgba(139, 92, 246, 0.25)'}`
+                        border: `1px solid ${isResearched ? 'var(--success-border)' : 'var(--border-color)'}`
                       }}>
-                        {isResearched ? 'RESEARCH AGENT (WEB SEARCHED)' : 'VISUAL ANALYSIS'}
+                        {intentTag}
                       </span>
 
                       {item.used_tools && item.used_tools.length > 0 && (
@@ -209,9 +210,10 @@ const AskAI = ({
                       )}
                     </div>
 
-                    <MarkdownView content={item.answer} collapsible={true} maxLength={400} />
+                    {/* Rendered Answer Content */}
+                    <MarkdownView content={item.answer} collapsible={true} maxLength={450} />
 
-                    {/* Sources Cards */}
+                    {/* Verified Source Cards */}
                     {item.sources && item.sources.length > 0 && (
                       <SourceList sources={item.sources} />
                     )}

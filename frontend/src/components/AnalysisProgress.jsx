@@ -24,7 +24,7 @@ const AnalysisProgress = ({ currentStep }) => {
       background: 'var(--bg-surface)',
     }}>
       <div style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
-        <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#F8FAFC' }}>
+        <h4 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-main)' }}>
           Analyzing Image
         </h4>
         <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>

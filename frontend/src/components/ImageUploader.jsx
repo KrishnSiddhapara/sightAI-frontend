@@ -67,7 +67,7 @@ const ImageUploader = ({
           border: '1px solid var(--danger-border)',
           borderRadius: 'var(--radius-md)',
           padding: '0.85rem 1.1rem',
-          color: '#FCA5A5',
+          color: 'var(--danger)',
           marginBottom: '1rem',
           fontSize: '0.9rem'
         }}>
@@ -84,7 +84,7 @@ const ImageUploader = ({
           style={{
             border: `2px dashed ${isDragOver ? 'var(--primary)' : 'var(--border-color)'}`,
             borderRadius: 'var(--radius-lg)',
-            background: isDragOver ? 'rgba(99, 102, 241, 0.08)' : 'var(--bg-surface)',
+            background: isDragOver ? 'var(--primary-glow)' : 'var(--bg-surface)',
             padding: '3rem 2rem',
             textAlign: 'center',
             cursor: 'pointer',
@@ -98,7 +98,7 @@ const ImageUploader = ({
             accept="image/jpeg,image/jpg,image/png,image/webp"
             style={{ display: 'none' }}
           />
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.4rem', color: '#F8FAFC' }}>
+          <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-main)' }}>
             Upload Image
           </h3>
           <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
@@ -125,7 +125,7 @@ const ImageUploader = ({
               height: '130px',
               borderRadius: 'var(--radius-md)',
               overflow: 'hidden',
-              background: '#070A11',
+              background: 'var(--bg-secondary)',
               border: '1px solid var(--border-color)',
               display: 'flex',
               alignItems: 'center',
@@ -146,7 +146,7 @@ const ImageUploader = ({
               <h4 style={{
                 fontSize: '1.05rem',
                 fontWeight: 700,
-                color: '#F8FAFC',
+                color: 'var(--text-main)',
                 marginBottom: '0.4rem',
                 wordBreak: 'break-all'
               }}>

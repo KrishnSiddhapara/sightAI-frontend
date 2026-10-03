@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 
-const Navbar = ({ activeTab, setActiveTab, apiConnected, apiConfigured }) => {
+const Navbar = ({ activeTab, setActiveTab, apiConnected, apiConfigured, theme, toggleTheme }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
     { id: 'analyze', label: 'Analyze' },
     { id: 'edit', label: 'AI Editor' },
-    { id: 'ask', label: 'Ask AI' },
+    { id: 'ask', label: 'Ask AI Agent' },
     { id: 'history', label: 'Version History' },
   ];
 
@@ -15,10 +15,12 @@ const Navbar = ({ activeTab, setActiveTab, apiConnected, apiConfigured }) => {
       position: 'sticky',
       top: 0,
       zIndex: 50,
-      background: 'rgba(11, 15, 23, 0.9)',
+      background: 'var(--nav-bg)',
       backdropFilter: 'blur(16px)',
+      WebkitBackdropFilter: 'blur(16px)',
       borderBottom: '1px solid var(--border-color)',
       padding: '0.75rem 1.5rem',
+      transition: 'background var(--transition-normal), border-color var(--transition-normal)'
     }}>
       <div style={{
         maxWidth: '1320px',
@@ -33,7 +35,7 @@ const Navbar = ({ activeTab, setActiveTab, apiConnected, apiConfigured }) => {
             width: '36px',
             height: '36px',
             borderRadius: '8px',
-            background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
+            background: 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -46,24 +48,24 @@ const Navbar = ({ activeTab, setActiveTab, apiConnected, apiConfigured }) => {
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ fontWeight: 700, fontSize: '1.15rem', letterSpacing: '-0.02em', color: '#F8FAFC' }}>
+              <span style={{ fontWeight: 700, fontSize: '1.15rem', letterSpacing: '-0.02em', color: 'var(--text-main)' }}>
                 SightAI
               </span>
               <span style={{
-                background: 'rgba(99, 102, 241, 0.12)',
-                border: '1px solid rgba(99, 102, 241, 0.25)',
-                color: '#A5B4FC',
+                background: 'var(--primary-glow)',
+                border: '1px solid var(--border-color)',
+                color: 'var(--primary)',
                 padding: '1px 7px',
                 borderRadius: 'var(--radius-full)',
                 fontSize: '0.7rem',
                 fontWeight: 600,
                 fontFamily: 'var(--font-mono)'
               }}>
-                Enterprise Vision
+                Enterprise Agent
               </span>
             </div>
             <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'block' }}>
-              Multimodal image analysis & grounded object detection
+              Multimodal image analysis & AI Research Agent
             </span>
           </div>
         </div>
@@ -102,25 +104,49 @@ const Navbar = ({ activeTab, setActiveTab, apiConnected, apiConfigured }) => {
           })}
         </div>
 
-        {/* Status Indicator & Mobile Toggle */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        {/* Right Controls: Theme Toggle, Status Indicator, Mobile Toggle */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          {/* Theme Switcher Toggle */}
+          <button
+            onClick={toggleTheme}
+            style={{
+              background: 'var(--bg-secondary)',
+              border: '1px solid var(--border-color)',
+              borderRadius: 'var(--radius-full)',
+              padding: '0.35rem 0.85rem',
+              color: 'var(--text-main)',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              transition: 'all var(--transition-fast)'
+            }}
+            title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+          >
+            <span>{theme === 'dark' ? '☀️' : '🌙'}</span>
+            <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
+          </button>
+
+          {/* Status Indicator */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
             gap: '0.45rem',
             padding: '0.3rem 0.75rem',
             borderRadius: 'var(--radius-full)',
-            background: apiConnected ? (apiConfigured ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)') : 'rgba(239, 68, 68, 0.1)',
-            border: `1px solid ${apiConnected ? (apiConfigured ? 'rgba(16, 185, 129, 0.25)' : 'rgba(245, 158, 11, 0.25)') : 'rgba(239, 68, 68, 0.25)'}`,
+            background: apiConnected ? (apiConfigured ? 'var(--success-bg)' : 'var(--warning-bg)') : 'var(--danger-bg)',
+            border: `1px solid ${apiConnected ? (apiConfigured ? 'var(--success-border)' : 'var(--warning-border)') : 'var(--danger-border)'}`,
             fontSize: '0.78rem',
             fontWeight: 500,
-            color: apiConnected ? (apiConfigured ? '#6EE7B7' : '#FCD34D') : '#FCA5A5'
+            color: apiConnected ? (apiConfigured ? 'var(--success)' : 'var(--warning)') : 'var(--danger)'
           }}>
             <span style={{
               width: '7px',
               height: '7px',
               borderRadius: '50%',
-              backgroundColor: apiConnected ? (apiConfigured ? '#10B981' : '#F59E0B') : '#EF4444',
+              backgroundColor: apiConnected ? (apiConfigured ? 'var(--success)' : 'var(--warning)') : 'var(--danger)',
             }} className="animate-pulse" />
             <span>
               {apiConnected ? (apiConfigured ? 'System Active' : 'API Key Missing') : 'Backend Offline'}

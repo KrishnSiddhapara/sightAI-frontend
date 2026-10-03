@@ -10,7 +10,7 @@ const HeroSection = () => {
     }}>
       <div style={{ display: 'inline-flex', marginBottom: '0.85rem' }}>
         <span className="badge-pill badge-primary">
-          INTERACTIVE COMPUTER VISION
+          INTERACTIVE AI AGENT & VISION
         </span>
       </div>
       
@@ -19,10 +19,10 @@ const HeroSection = () => {
         fontWeight: 800,
         lineHeight: 1.2,
         marginBottom: '0.75rem',
-        color: '#F8FAFC',
+        color: 'var(--text-main)',
         letterSpacing: '-0.03em'
       }}>
-        Precision Object Identification & Visual Spatial Grounding
+        Precision Object Identification & AI Research Agent
       </h1>
 
       <p style={{
@@ -31,7 +31,7 @@ const HeroSection = () => {
         fontWeight: 400,
         lineHeight: 1.5
       }}>
-        Upload an image to perform grounded physical instance verification, spatial bounding box localization, multi-version editing, and visual query processing.
+        Upload an image to perform grounded physical instance verification, spatial bounding box localization, multi-version editing, and real-time AI web research.
       </p>
     </div>
   );

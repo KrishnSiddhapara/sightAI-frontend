@@ -43,11 +43,26 @@ function App() {
   const [isAsking, setIsAsking] = useState(false);
   const [userRegion, setUserRegion] = useState('Global');
 
+  // Theme System State ('light' default, or persisted preference)
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('sightai_theme') || 'light';
+  });
+
   // Global Error Alert
   const [globalError, setGlobalError] = useState(null);
 
   // Request ID Ref to prevent race conditions & stale response overwrites
   const activeRequestId = useRef(0);
+
+  // Synchronize theme attribute on HTML root element
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('sightai_theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  };
 
   // Check Backend Health on mount
   useEffect(() => {
@@ -308,6 +323,8 @@ function App() {
         setActiveTab={setActiveTab}
         apiConnected={apiConnected}
         apiConfigured={apiConfigured}
+        theme={theme}
+        toggleTheme={toggleTheme}
       />
 
       {/* Main Content Area */}
@@ -321,7 +338,7 @@ function App() {
             border: '1px solid var(--danger-border)',
             borderRadius: 'var(--radius-md)',
             padding: '0.85rem 1.1rem',
-            color: '#FCA5A5',
+            color: 'var(--danger)',
             marginBottom: '1.5rem',
             display: 'flex',
             alignItems: 'center',
@@ -331,7 +348,7 @@ function App() {
             <span>{globalError}</span>
             <button
               onClick={() => setGlobalError(null)}
-              style={{ background: 'none', border: 'none', color: '#FCA5A5', cursor: 'pointer', fontWeight: 700 }}
+              style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', fontWeight: 700 }}
             >
               ✕
             </button>
@@ -450,10 +467,11 @@ function App() {
         color: 'var(--text-subtle)',
         fontSize: '0.8rem',
         marginTop: '3rem',
-        background: 'rgba(11, 15, 23, 0.95)'
+        background: 'var(--nav-bg)',
+        transition: 'background var(--transition-normal)'
       }}>
         <div style={{ maxWidth: '1320px', margin: '0 auto' }}>
-          SightAI — Enterprise Multimodal Vision & Grounded Object Detection System
+          SightAI — Enterprise Multimodal Vision & AI Research Agent
         </div>
       </footer>
     </div>
