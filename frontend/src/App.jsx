@@ -11,7 +11,7 @@ import ImageComparison from './components/ImageComparison';
 import AskAI from './components/AskAI';
 import EmptyState from './components/EmptyState';
 
-import { getHealth, analyzeImage, editImage, askQuestion, exportImage } from './services/api';
+import { getHealth, analyzeImage, editImage, askQuestion, researchWithAgent, exportImage } from './services/api';
 
 function App() {
   const [activeTab, setActiveTab] = useState('analyze'); // 'analyze' | 'edit' | 'ask' | 'history'
@@ -41,6 +41,7 @@ function App() {
   // Grounded Q&A State
   const [qaHistory, setQaHistory] = useState([]);
   const [isAsking, setIsAsking] = useState(false);
+  const [userRegion, setUserRegion] = useState('Global');
 
   // Global Error Alert
   const [globalError, setGlobalError] = useState(null);
@@ -209,22 +210,35 @@ function App() {
     }
   };
 
-  // Trigger Grounded Q&A
-  const handleAskQuestion = async (questionText) => {
-    const activeVer = versionHistory.find(v => v.version_number === activeVersionNum) || versionHistory[0];
-    if (!activeVer) return;
 
+
+  // Trigger Grounded AI Research Agent Q&A
+  const handleAskQuestion = async (questionText) => {
     setIsAsking(true);
     setGlobalError(null);
 
     try {
-      const res = await askQuestion({
-        imageBase64: activeVer.image_base64,
-        question: questionText
+      const res = await researchWithAgent({
+        question: questionText,
+        imageContext: analysisResult,
+        conversationHistory: qaHistory,
+        userRegion: userRegion
       });
 
       if (res.success) {
-        setQaHistory(prev => [...prev, { question: questionText, answer: res.answer }]);
+        setQaHistory(prev => [
+          ...prev,
+          {
+            question: questionText,
+            answer: res.answer,
+            used_tools: res.used_tools || [],
+            sources: res.sources || [],
+            confidence: res.confidence || 'high',
+            requires_research: res.requires_research || false
+          }
+        ]);
+      } else {
+        setGlobalError(`Research Agent Error: ${res.error || 'Failed to generate research response.'}`);
       }
     } catch (err) {
       console.error('Q&A error:', err);
@@ -366,6 +380,9 @@ function App() {
                 onAskQuestion={handleAskQuestion}
                 isAsking={isAsking}
                 apiConfigured={apiConfigured}
+                imageContext={analysisResult}
+                userRegion={userRegion}
+                setUserRegion={setUserRegion}
               />
             )}
 

@@ -66,6 +66,16 @@ export const askQuestion = async ({ file, imageBase64, question }) => {
   return response.data;
 };
 
+export const researchWithAgent = async ({ question, imageContext, conversationHistory, userRegion }) => {
+  const response = await api.post('/agent/research', {
+    question,
+    image_context: imageContext || null,
+    conversation_history: conversationHistory || [],
+    user_region: userRegion || null
+  });
+  return response.data;
+};
+
 export const exportImage = async ({ imageBase64, formatType }) => {
   const formData = new FormData();
   formData.append('image_base64', imageBase64);
