@@ -5,11 +5,11 @@ const API_BASE_URL = API_URL ? `${API_URL.replace(/\/$/, '')}/api` : '/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 120000, // 2-minute timeout for VLM calls
+  timeout: 120000, // 120 seconds (2 minutes)
 });
 
 export const getHealth = async () => {
-  const response = await api.get('/health');
+  const response = await api.get('/health', { timeout: 15000 });
   return response.data;
 };
 
@@ -18,6 +18,7 @@ export const checkSafety = async (file) => {
   formData.append('file', file);
   const response = await api.post('/safety-check', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 60000,
   });
   return response.data;
 };
@@ -27,6 +28,7 @@ export const analyzeImage = async (file) => {
   formData.append('file', file);
   const response = await api.post('/analyze', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 120000, // Explicit 2-minute timeout for VLM image analysis
   });
   return response.data;
 };
@@ -46,6 +48,7 @@ export const editImage = async ({ file, imageBase64, instruction, visionContextJ
   
   const response = await api.post('/edit', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 120000,
   });
   return response.data;
 };
@@ -62,6 +65,7 @@ export const askQuestion = async ({ file, imageBase64, question }) => {
 
   const response = await api.post('/ask', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 120000,
   });
   return response.data;
 };
@@ -72,6 +76,8 @@ export const researchWithAgent = async ({ question, imageContext, conversationHi
     image_context: imageContext || null,
     conversation_history: conversationHistory || [],
     user_region: userRegion || null
+  }, {
+    timeout: 120000, // Explicit 2-minute timeout for agent web research
   });
   return response.data;
 };
@@ -84,6 +90,7 @@ export const exportImage = async ({ imageBase64, formatType }) => {
   const response = await api.post('/export', formData, {
     responseType: 'blob',
     headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 60000,
   });
   return response.data;
 };
