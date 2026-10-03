@@ -42,12 +42,18 @@ const ObjectDetectionViewer = ({
     const img = imgRef.current;
     const container = containerRef.current;
 
-    if (!img || !container || !img.naturalWidth || !img.naturalHeight) {
+    if (!img || !container) {
+      return;
+    }
+
+    if (!img.naturalWidth || !img.naturalHeight) {
       return;
     }
 
     const containerWidth = container.clientWidth;
     const containerHeight = container.clientHeight;
+
+    if (containerWidth <= 0 || containerHeight <= 0) return;
 
     const imgRatio = img.naturalWidth / img.naturalHeight;
     const containerRatio = containerWidth / containerHeight;
@@ -79,9 +85,38 @@ const ObjectDetectionViewer = ({
   };
 
   useEffect(() => {
-    updateImageBounds();
-    window.addEventListener('resize', updateImageBounds);
-    return () => window.removeEventListener('resize', updateImageBounds);
+    const img = imgRef.current;
+    const container = containerRef.current;
+
+    const handleBounds = () => {
+      updateImageBounds();
+    };
+
+    handleBounds();
+
+    let resizeObserver;
+    if (container && typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => {
+        handleBounds();
+      });
+      resizeObserver.observe(container);
+    }
+
+    window.addEventListener('resize', handleBounds);
+
+    if (img) {
+      if (img.complete) {
+        handleBounds();
+      } else {
+        img.addEventListener('load', handleBounds);
+      }
+    }
+
+    return () => {
+      window.removeEventListener('resize', handleBounds);
+      if (resizeObserver) resizeObserver.disconnect();
+      if (img) img.removeEventListener('load', handleBounds);
+    };
   }, [imageSrc]);
 
   // Extract all instances with bounding boxes
@@ -148,10 +183,17 @@ const ObjectDetectionViewer = ({
               const bbox = instance.bounding_box;
               if (!bbox) return null;
 
-              const left = (bbox.x_min / 1000) * renderBounds.displayedWidth;
-              const top = (bbox.y_min / 1000) * renderBounds.displayedHeight;
-              const width = ((bbox.x_max - bbox.x_min) / 1000) * renderBounds.displayedWidth;
-              const height = ((bbox.y_max - bbox.y_min) / 1000) * renderBounds.displayedHeight;
+              const x_min = Number(bbox.x_min) || 0;
+              const y_min = Number(bbox.y_min) || 0;
+              const x_max = Number(bbox.x_max) || x_min;
+              const y_max = Number(bbox.y_max) || y_min;
+
+              if (x_max <= x_min || y_max <= y_min) return null;
+
+              const left = (x_min / 1000) * renderBounds.displayedWidth;
+              const top = (y_min / 1000) * renderBounds.displayedHeight;
+              const width = ((x_max - x_min) / 1000) * renderBounds.displayedWidth;
+              const height = ((y_max - y_min) / 1000) * renderBounds.displayedHeight;
 
               const isInstanceActive = selectedInstance === instance.id;
               const isCategoryActive = selectedCategory?.toLowerCase() === categoryName.toLowerCase();
