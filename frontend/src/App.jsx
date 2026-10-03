@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import ImageUploader from './components/ImageUploader';
@@ -46,6 +46,9 @@ function App() {
   // Global Error Alert
   const [globalError, setGlobalError] = useState(null);
 
+  // Request ID Ref to prevent race conditions & stale response overwrites
+  const activeRequestId = useRef(0);
+
   // Check Backend Health on mount
   useEffect(() => {
     checkBackendHealth();
@@ -65,12 +68,14 @@ function App() {
 
   // Handle Image File Selection
   const handleFileSelect = (file) => {
+    activeRequestId.current = Date.now(); // Invalidate any running analysis request
     setSelectedFile(file);
     setAnalysisResult(null);
     setSafetyResult(null);
     setQaHistory([]);
     setEditSafetyResult(null);
     setGlobalError(null);
+    setIsAnalyzing(false);
 
     // Read File into Base64 Data URI
     const reader = new FileReader();
@@ -102,6 +107,7 @@ function App() {
 
   // Remove Selected Image
   const handleRemoveImage = () => {
+    activeRequestId.current = Date.now(); // Invalidate any running analysis request
     setSelectedFile(null);
     setImagePreview(null);
     setImageDimensions(null);
@@ -113,11 +119,15 @@ function App() {
     setQaHistory([]);
     setEditSafetyResult(null);
     setGlobalError(null);
+    setIsAnalyzing(false);
   };
 
   // Trigger AI Vision Analysis Pipeline
   const handleAnalyze = async () => {
-    if (!selectedFile) return;
+    if (!selectedFile || isAnalyzing) return;
+
+    const reqId = Date.now();
+    activeRequestId.current = reqId;
 
     setIsAnalyzing(true);
     setGlobalError(null);
@@ -125,11 +135,13 @@ function App() {
 
     // Step 1: Validating
     setProgressStep('validating');
-    await new Promise(r => setTimeout(r, 400));
+    await new Promise(r => setTimeout(r, 200));
+    if (activeRequestId.current !== reqId) return;
 
     // Step 2: Safety screening
     setProgressStep('safety');
-    await new Promise(r => setTimeout(r, 400));
+    await new Promise(r => setTimeout(r, 200));
+    if (activeRequestId.current !== reqId) return;
 
     // Step 3: Understanding image
     setProgressStep('understanding');
@@ -139,9 +151,14 @@ function App() {
       setProgressStep('verifying');
       const res = await analyzeImage(selectedFile);
 
+      if (activeRequestId.current !== reqId) {
+        console.warn('Discarding stale analysis response from previous image.');
+        return;
+      }
+
       // Step 5: Preparing results
       setProgressStep('preparing');
-      await new Promise(r => setTimeout(r, 300));
+      await new Promise(r => setTimeout(r, 200));
 
       if (res.success) {
         setAnalysisResult(res.data);
@@ -150,15 +167,24 @@ function App() {
         setSafetyResult(res.safety || { is_safe: false, category: 'UNSAFE', error: res.error });
       }
     } catch (err) {
+      if (activeRequestId.current !== reqId) return;
+
       console.error('Analysis error:', err);
-      const errMsg = err.response?.data?.detail || err.response?.data?.error || err.message || 'Analysis failed.';
+      let errMsg = err.response?.data?.detail || err.response?.data?.error || err.message || 'Analysis failed.';
+      
+      if (err.code === 'ECONNABORTED' || (errMsg && errMsg.toLowerCase().includes('timeout'))) {
+        errMsg = 'Analysis took longer than expected due to high image complexity or network latency. Please click "Analyze Image" again to retry.';
+      }
+
       if (err.response?.data?.safety) {
         setSafetyResult(err.response.data.safety);
       } else {
-        setGlobalError(`Analysis error: ${errMsg}`);
+        setGlobalError(errMsg);
       }
     } finally {
-      setIsAnalyzing(false);
+      if (activeRequestId.current === reqId) {
+        setIsAnalyzing(false);
+      }
     }
   };
 
