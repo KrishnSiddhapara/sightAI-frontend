@@ -32,11 +32,11 @@ const EmptyState = ({ type = 'upload', onAction }) => {
       borderRadius: 'var(--radius-lg)',
       margin: '1.5rem 0'
     }}>
-      <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#F8FAFC', marginBottom: '0.4rem' }}>
+      <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--heading)', marginBottom: '0.4rem' }}>
         {config.title}
       </h3>
 
-      <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', maxWidth: '480px', margin: '0 auto 1.25rem auto', lineHeight: 1.5 }}>
+      <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', maxWidth: '480px', margin: '0 auto 1.25rem auto', lineHeight: 1.5 }}>
         {config.description}
       </p>
 

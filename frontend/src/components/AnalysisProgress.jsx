@@ -43,7 +43,7 @@ const AnalysisProgress = ({ currentStep }) => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 fontSize: '0.9rem',
-                color: status === 'completed' ? '#6EE7B7' : status === 'active' ? '#A5B4FC' : 'var(--text-subtle)',
+                color: status === 'completed' ? 'var(--success-text)' : status === 'active' ? 'var(--primary-text)' : 'var(--text-subtle)',
                 fontWeight: status === 'active' ? 600 : 400,
               }}
             >

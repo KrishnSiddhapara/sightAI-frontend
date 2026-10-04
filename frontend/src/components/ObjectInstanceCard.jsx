@@ -31,10 +31,10 @@ const ObjectInstanceCard = ({ category, selectedInstance = null, onSelectInstanc
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#F8FAFC', textTransform: 'capitalize' }}>
+          <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--heading)', textTransform: 'capitalize' }}>
             {category.name}
           </h4>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
             ({category.confirmed_count} confirmed{category.uncertain_count > 0 ? `, ${category.uncertain_count} unconfirmed` : ''})
           </span>
         </div>
@@ -63,7 +63,7 @@ const ObjectInstanceCard = ({ category, selectedInstance = null, onSelectInstanc
               border: '1px solid var(--warning-border)',
               borderRadius: 'var(--radius-sm)',
               padding: '0.45rem 0.75rem',
-              color: '#FCD34D',
+              color: 'var(--warning-text)',
               fontSize: '0.8rem',
               marginBottom: '0.85rem'
             }}>
@@ -86,7 +86,7 @@ const ObjectInstanceCard = ({ category, selectedInstance = null, onSelectInstanc
                   <div
                     key={inst.id || idx}
                     style={{
-                      background: isSelected ? 'rgba(99, 102, 241, 0.12)' : 'rgba(15, 23, 42, 0.4)',
+                      background: isSelected ? 'var(--primary-glow)' : 'var(--bg-secondary)',
                       border: isSelected ? '1px solid var(--primary)' : '1px solid var(--border-color)',
                       borderRadius: 'var(--radius-sm)',
                       padding: '0.85rem',
@@ -104,7 +104,7 @@ const ObjectInstanceCard = ({ category, selectedInstance = null, onSelectInstanc
                       <span style={{
                         fontSize: '0.825rem',
                         fontWeight: 700,
-                        color: isPerson ? '#A78BFA' : '#818CF8',
+                        color: 'var(--primary-text)',
                         fontFamily: 'var(--font-mono)'
                       }}>
                         Instance {inst.id}
@@ -115,9 +115,9 @@ const ObjectInstanceCard = ({ category, selectedInstance = null, onSelectInstanc
                           type="button"
                           onClick={() => onSelectInstance(inst.id, category.name)}
                           style={{
-                            background: isSelected ? 'var(--primary)' : 'var(--bg-secondary)',
+                            background: isSelected ? 'var(--primary)' : 'var(--bg-surface)',
                             border: '1px solid var(--border-color)',
-                            color: isSelected ? '#FFFFFF' : 'var(--text-muted)',
+                            color: isSelected ? '#FFFFFF' : 'var(--text-secondary)',
                             fontSize: '0.75rem',
                             fontWeight: 600,
                             padding: '2px 8px',
@@ -131,7 +131,7 @@ const ObjectInstanceCard = ({ category, selectedInstance = null, onSelectInstanc
                     </div>
 
                     {inst.uncertainty_reason && (
-                      <p style={{ fontSize: '0.78rem', color: '#FCD34D', marginBottom: '0.5rem' }}>
+                      <p style={{ fontSize: '0.78rem', color: 'var(--warning-text)', marginBottom: '0.5rem' }}>
                         Uncertainty: {inst.uncertainty_reason}
                       </p>
                     )}
@@ -140,48 +140,48 @@ const ObjectInstanceCard = ({ category, selectedInstance = null, onSelectInstanc
                       {isPerson ? (
                         <>
                           <div>
-                            <span style={{ color: 'var(--text-muted)' }}>Clothing: </span>
-                            <span style={{ color: '#F8FAFC', fontWeight: 500 }}>{attr.clothing || 'not clearly visible'}</span>
+                            <span style={{ color: 'var(--text-secondary)' }}>Clothing: </span>
+                            <span style={{ color: 'var(--text-main)', fontWeight: 500 }}>{attr.clothing || 'not clearly visible'}</span>
                           </div>
                           <div>
-                            <span style={{ color: 'var(--text-muted)' }}>Clothing Colors: </span>
-                            <span style={{ color: '#F8FAFC', fontWeight: 500 }}>{attr.clothing_color || 'not clearly visible'}</span>
+                            <span style={{ color: 'var(--text-secondary)' }}>Clothing Colors: </span>
+                            <span style={{ color: 'var(--text-main)', fontWeight: 500 }}>{attr.clothing_color || 'not clearly visible'}</span>
                           </div>
                           <div>
-                            <span style={{ color: 'var(--text-muted)' }}>Pose: </span>
-                            <span style={{ color: '#F8FAFC', fontWeight: 500 }}>{attr.pose || 'unknown'}</span>
+                            <span style={{ color: 'var(--text-secondary)' }}>Pose: </span>
+                            <span style={{ color: 'var(--text-main)', fontWeight: 500 }}>{attr.pose || 'unknown'}</span>
                           </div>
                           <div>
-                            <span style={{ color: 'var(--text-muted)' }}>Action: </span>
-                            <span style={{ color: '#F8FAFC', fontWeight: 500 }}>{attr.action || 'unknown'}</span>
+                            <span style={{ color: 'var(--text-secondary)' }}>Action: </span>
+                            <span style={{ color: 'var(--text-main)', fontWeight: 500 }}>{attr.action || 'unknown'}</span>
                           </div>
                           <div>
-                            <span style={{ color: 'var(--text-muted)' }}>Accessories: </span>
-                            <span style={{ color: '#F8FAFC', fontWeight: 500 }}>{attr.accessories || 'none visible'}</span>
+                            <span style={{ color: 'var(--text-secondary)' }}>Accessories: </span>
+                            <span style={{ color: 'var(--text-main)', fontWeight: 500 }}>{attr.accessories || 'none visible'}</span>
                           </div>
                         </>
                       ) : (
                         <>
                           <div>
-                            <span style={{ color: 'var(--text-muted)' }}>Color: </span>
-                            <span style={{ color: '#F8FAFC', fontWeight: 500 }}>{attr.object_color || 'not clearly visible'}</span>
+                            <span style={{ color: 'var(--text-secondary)' }}>Color: </span>
+                            <span style={{ color: 'var(--text-main)', fontWeight: 500 }}>{attr.object_color || 'not clearly visible'}</span>
                           </div>
                           <div>
-                            <span style={{ color: 'var(--text-muted)' }}>Type / Characteristics: </span>
-                            <span style={{ color: '#F8FAFC', fontWeight: 500 }}>{attr.type_or_subtype || 'unknown'}</span>
+                            <span style={{ color: 'var(--text-secondary)' }}>Type / Characteristics: </span>
+                            <span style={{ color: 'var(--text-main)', fontWeight: 500 }}>{attr.type_or_subtype || 'unknown'}</span>
                           </div>
                           <div>
-                            <span style={{ color: 'var(--text-muted)' }}>Visible Details: </span>
-                            <span style={{ color: '#F8FAFC', fontWeight: 500 }}>{attr.visible_details || 'none noted'}</span>
+                            <span style={{ color: 'var(--text-secondary)' }}>Visible Details: </span>
+                            <span style={{ color: 'var(--text-main)', fontWeight: 500 }}>{attr.visible_details || 'none noted'}</span>
                           </div>
                           <div>
-                            <span style={{ color: 'var(--text-muted)' }}>Pose / State: </span>
-                            <span style={{ color: '#F8FAFC', fontWeight: 500 }}>{attr.pose || 'unknown'}</span>
+                            <span style={{ color: 'var(--text-secondary)' }}>Pose / State: </span>
+                            <span style={{ color: 'var(--text-main)', fontWeight: 500 }}>{attr.pose || 'unknown'}</span>
                           </div>
                         </>
                       )}
 
-                      <div style={{ marginTop: '0.25rem', paddingTop: '0.25rem', borderTop: '1px solid rgba(255,255,255,0.05)', fontSize: '0.75rem', color: 'var(--text-subtle)' }}>
+                      <div style={{ marginTop: '0.25rem', paddingTop: '0.25rem', borderTop: '1px solid var(--border-color)', fontSize: '0.75rem', color: 'var(--text-subtle)' }}>
                         Bounding Box: {hasBox ? `[${inst.bounding_box.x_min}, ${inst.bounding_box.y_min}, ${inst.bounding_box.x_max}, ${inst.bounding_box.y_max}]` : 'Unavailable'}
                       </div>
                     </div>

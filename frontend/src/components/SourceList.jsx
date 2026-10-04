@@ -21,10 +21,10 @@ const SourceList = ({ sources = [] }) => {
   return (
     <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-        <span style={{ fontSize: '0.78rem', color: 'var(--text-subtle)', fontWeight: 700, letterSpacing: '0.05em' }}>
+        <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontWeight: 700, letterSpacing: '0.05em' }}>
           VERIFIED SOURCES & LINKS ({sources.length})
         </span>
-        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
           Click to open external page
         </span>
       </div>
@@ -61,17 +61,17 @@ const SourceList = ({ sources = [] }) => {
                   }}>
                     {badge.label}
                   </span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-subtle)', fontFamily: 'var(--font-mono)' }}>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
                     {src.domain}
                   </span>
                 </div>
 
-                <h5 style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-main)', lineHeight: 1.3, marginBottom: '0.35rem' }}>
+                <h5 style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--heading)', lineHeight: 1.3, marginBottom: '0.35rem' }}>
                   {src.title}
                 </h5>
 
                 {src.snippet && (
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: 1.4, margin: 0 }}>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.4, margin: 0 }}>
                     {src.snippet.length > 110 ? src.snippet.slice(0, 110) + '...' : src.snippet}
                   </p>
                 )}

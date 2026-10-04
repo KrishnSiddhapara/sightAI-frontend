@@ -343,7 +343,7 @@ function App() {
             border: '1px solid var(--danger-border)',
             borderRadius: 'var(--radius-md)',
             padding: '0.85rem 1.1rem',
-            color: 'var(--danger)',
+            color: 'var(--danger-text)',
             marginBottom: '1.5rem',
             display: 'flex',
             alignItems: 'center',
@@ -353,7 +353,7 @@ function App() {
             <span>{globalError}</span>
             <button
               onClick={() => setGlobalError(null)}
-              style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', fontWeight: 700 }}
+              style={{ background: 'none', border: 'none', color: 'var(--danger-text)', cursor: 'pointer', fontWeight: 700 }}
             >
               ✕
             </button>
@@ -469,7 +469,7 @@ function App() {
         borderTop: '1px solid var(--border-color)',
         padding: '1.5rem',
         textAlign: 'center',
-        color: 'var(--text-subtle)',
+        color: 'var(--text-secondary)',
         fontSize: '0.8rem',
         marginTop: '3rem',
         background: 'var(--nav-bg)',

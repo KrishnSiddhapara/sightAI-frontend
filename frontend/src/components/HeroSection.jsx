@@ -19,7 +19,7 @@ const HeroSection = () => {
         fontWeight: 800,
         lineHeight: 1.2,
         marginBottom: '0.75rem',
-        color: 'var(--text-main)',
+        color: 'var(--heading)',
         letterSpacing: '-0.03em'
       }}>
         Precision Object Identification & AI Research Agent
@@ -27,7 +27,7 @@ const HeroSection = () => {
 
       <p style={{
         fontSize: '1.05rem',
-        color: 'var(--text-muted)',
+        color: 'var(--text-secondary)',
         fontWeight: 400,
         lineHeight: 1.5
       }}>

@@ -56,10 +56,10 @@ const ImageEditor = ({
   return (
     <div className="card-glass" style={{ marginBottom: '2rem', padding: '1.5rem' }}>
       <div style={{ marginBottom: '1.25rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
-        <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#F8FAFC' }}>
+        <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--heading)' }}>
           AI Image Editor (Multi-Version)
         </h3>
-        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+        <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
           Instruct Gemini to modify, add, or remove objects with version control
         </span>
       </div>
@@ -70,7 +70,7 @@ const ImageEditor = ({
           display: 'block',
           fontSize: '0.85rem',
           fontWeight: 600,
-          color: 'var(--text-muted)',
+          color: 'var(--text-secondary)',
           marginBottom: '0.4rem'
         }}>
           Select Base Version to Edit:
@@ -97,7 +97,7 @@ const ImageEditor = ({
       {/* Form Input */}
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '1rem' }}>
-          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#F8FAFC', marginBottom: '0.4rem' }}>
+          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'var(--heading)', marginBottom: '0.4rem' }}>
             Edit Instruction
           </label>
           <input
@@ -121,7 +121,7 @@ const ImageEditor = ({
             border: '1px solid var(--warning-border)',
             borderRadius: 'var(--radius-md)',
             padding: '0.75rem 1rem',
-            color: '#FCD34D',
+            color: 'var(--warning-text)',
             fontSize: '0.85rem',
             marginBottom: '1rem',
           }}>
@@ -145,7 +145,7 @@ const ImageEditor = ({
                   border: '1px solid var(--border-color)',
                   borderRadius: 'var(--radius-full)',
                   padding: '0.3rem 0.75rem',
-                  color: 'var(--text-muted)',
+                  color: 'var(--text-secondary)',
                   fontSize: '0.8rem',
                   cursor: 'pointer',
                   transition: 'all 0.15s ease'
@@ -164,10 +164,10 @@ const ImageEditor = ({
             border: '1px solid var(--danger-border)',
             borderRadius: 'var(--radius-md)',
             padding: '0.85rem 1rem',
-            color: '#FCA5A5',
+            color: 'var(--danger-text)',
             marginBottom: '1.25rem',
           }}>
-            <strong style={{ display: 'block', color: '#F8FAFC', marginBottom: '0.2rem', fontSize: '0.9rem' }}>
+            <strong style={{ display: 'block', color: 'var(--heading)', marginBottom: '0.2rem', fontSize: '0.9rem' }}>
               Generated Edit Rejected by Safety Gate
             </strong>
             <span style={{ fontSize: '0.85rem' }}>

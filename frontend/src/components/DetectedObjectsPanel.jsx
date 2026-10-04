@@ -81,7 +81,7 @@ const DetectedObjectsPanel = ({
                     gap: '0.6rem',
                     background: 'none',
                     border: 'none',
-                    color: '#F8FAFC',
+                    color: 'var(--text-main)',
                     cursor: 'pointer',
                     fontSize: '0.9rem',
                     fontWeight: 600,
@@ -100,7 +100,7 @@ const DetectedObjectsPanel = ({
                   <span style={{
                     background: 'var(--bg-secondary)',
                     border: '1px solid var(--border-color)',
-                    color: isCategorySelected ? '#A5B4FC' : 'var(--text-muted)',
+                    color: isCategorySelected ? 'var(--primary-text)' : 'var(--text-secondary)',
                     padding: '1px 6px',
                     borderRadius: 'var(--radius-full)',
                     fontSize: '0.75rem',
@@ -109,7 +109,7 @@ const DetectedObjectsPanel = ({
                     {cat.confirmed_count}
                   </span>
                   {cat.uncertain_count > 0 && (
-                    <span style={{ color: 'var(--warning)', fontSize: '0.75rem', fontWeight: 600 }}>
+                    <span style={{ color: 'var(--warning-text)', fontSize: '0.75rem', fontWeight: 600 }}>
                       (+{cat.uncertain_count} unconfirmed)
                     </span>
                   )}
@@ -122,7 +122,7 @@ const DetectedObjectsPanel = ({
                     style={{
                       background: 'var(--bg-secondary)',
                       border: '1px solid var(--border-color)',
-                      color: 'var(--text-muted)',
+                      color: 'var(--text-secondary)',
                       padding: '2px 7px',
                       borderRadius: 'var(--radius-sm)',
                       fontSize: '0.75rem',
@@ -139,7 +139,7 @@ const DetectedObjectsPanel = ({
                 <div style={{
                   padding: '0.4rem 0.85rem 0.6rem 1.75rem',
                   borderTop: '1px solid var(--border-color)',
-                  background: 'rgba(0, 0, 0, 0.15)',
+                  background: 'var(--subtle-tint)',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '0.3rem'
@@ -172,9 +172,9 @@ const DetectedObjectsPanel = ({
                             ? '1px solid var(--secondary)'
                             : (isHovered ? '1px solid var(--border-hover)' : '1px solid transparent'),
                           background: isInstanceSelected
-                            ? 'rgba(139, 92, 246, 0.2)'
+                            ? 'var(--primary-glow)'
                             : (isHovered ? 'var(--bg-secondary)' : 'transparent'),
-                          color: isInstanceSelected ? '#DDD6FE' : 'var(--text-main)',
+                          color: isInstanceSelected ? 'var(--primary-text)' : 'var(--text-main)',
                           cursor: 'pointer',
                           fontSize: '0.825rem',
                           textAlign: 'left',

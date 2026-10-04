@@ -48,7 +48,7 @@ const Navbar = ({ activeTab, setActiveTab, apiConnected, apiConfigured, theme, t
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ fontWeight: 700, fontSize: '1.15rem', letterSpacing: '-0.02em', color: 'var(--text-main)' }}>
+              <span style={{ fontWeight: 700, fontSize: '1.15rem', letterSpacing: '-0.02em', color: 'var(--heading)' }}>
                 SightAI
               </span>
               <span style={{
@@ -64,7 +64,7 @@ const Navbar = ({ activeTab, setActiveTab, apiConnected, apiConfigured, theme, t
                 Enterprise Agent
               </span>
             </div>
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'block' }}>
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', display: 'block' }}>
               Multimodal image analysis & AI Research Agent
             </span>
           </div>
@@ -91,8 +91,8 @@ const Navbar = ({ activeTab, setActiveTab, apiConnected, apiConfigured, theme, t
                   borderRadius: 'var(--radius-full)',
                   border: 'none',
                   background: isActive ? 'var(--primary)' : 'transparent',
-                  color: isActive ? '#FFFFFF' : 'var(--text-muted)',
-                  fontWeight: isActive ? 600 : 500,
+                  color: isActive ? '#FFFFFF' : 'var(--text-secondary)',
+                  fontWeight: isActive ? 700 : 600,
                   fontSize: '0.875rem',
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
@@ -197,7 +197,7 @@ const Navbar = ({ activeTab, setActiveTab, apiConnected, apiConfigured, theme, t
                   borderRadius: 'var(--radius-md)',
                   border: 'none',
                   background: isActive ? 'var(--primary)' : 'var(--bg-surface)',
-                  color: isActive ? '#FFFFFF' : 'var(--text-muted)',
+                  color: isActive ? '#FFFFFF' : 'var(--text-secondary)',
                   fontWeight: 600,
                   fontSize: '0.9rem',
                   textAlign: 'left',

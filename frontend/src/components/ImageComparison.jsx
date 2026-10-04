@@ -13,10 +13,10 @@ const ImageComparison = ({ originalImage, activeVersion }) => {
     <div className="card-glass" style={{ marginBottom: '2rem', padding: '1.5rem' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
         <div>
-          <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#F8FAFC' }}>
+          <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--heading)' }}>
             Image Comparison
           </h3>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
             Compare original upload against active edited version
           </span>
         </div>
@@ -27,7 +27,7 @@ const ImageComparison = ({ originalImage, activeVersion }) => {
               onClick={() => setViewMode('side-by-side')}
               style={{
                 background: viewMode === 'side-by-side' ? 'var(--primary)' : 'transparent',
-                color: viewMode === 'side-by-side' ? '#FFFFFF' : 'var(--text-muted)',
+                color: viewMode === 'side-by-side' ? '#FFFFFF' : 'var(--text-secondary)',
                 border: 'none',
                 borderRadius: 'var(--radius-full)',
                 padding: '0.3rem 0.75rem',
@@ -42,7 +42,7 @@ const ImageComparison = ({ originalImage, activeVersion }) => {
               onClick={() => setViewMode('slider')}
               style={{
                 background: viewMode === 'slider' ? 'var(--primary)' : 'transparent',
-                color: viewMode === 'slider' ? '#FFFFFF' : 'var(--text-muted)',
+                color: viewMode === 'slider' ? '#FFFFFF' : 'var(--text-secondary)',
                 border: 'none',
                 borderRadius: 'var(--radius-full)',
                 padding: '0.3rem 0.75rem',
@@ -71,7 +71,7 @@ const ImageComparison = ({ originalImage, activeVersion }) => {
             padding: '1rem',
             textAlign: 'center'
           }}>
-            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#A5B4FC', marginBottom: '0.75rem' }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--heading)', marginBottom: '0.75rem' }}>
               Original Image (Version 0)
             </div>
             <div style={{
@@ -99,7 +99,7 @@ const ImageComparison = ({ originalImage, activeVersion }) => {
             padding: '1rem',
             textAlign: 'center'
           }}>
-            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: isOriginalActive ? '#A5B4FC' : '#6EE7B7', marginBottom: '0.75rem' }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: isOriginalActive ? 'var(--heading)' : 'var(--success-text)', marginBottom: '0.75rem' }}>
               {isOriginalActive ? 'Active Image (Version 0)' : `Active Result (Version ${activeVersion.version_number}: "${activeVersion.edit_prompt}")`}
             </div>
             <div style={{

@@ -44,7 +44,7 @@ const StatsCards = ({ analysisData }) => {
           <span style={{ fontSize: '0.75rem', color: 'var(--text-subtle)', fontWeight: 600, uppercase: 'true', display: 'block', marginBottom: '0.25rem' }}>
             {stat.label}
           </span>
-          <span style={{ fontSize: '1.35rem', fontWeight: 800, color: '#F8FAFC', letterSpacing: '-0.02em' }}>
+          <span style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--heading)', letterSpacing: '-0.02em' }}>
             {stat.value}
           </span>
         </div>

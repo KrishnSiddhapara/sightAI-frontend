@@ -35,25 +35,25 @@ const AskAI = ({
     <div className="card-glass" style={{ marginBottom: '2rem', padding: '1.5rem' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
         <div>
-          <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-main)' }}>
+          <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--heading)' }}>
             AI Research Agent & Visual Q&A
           </h3>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
             Answers visual queries or researches live market prices, technical specs, purchase options, and verified web sources
           </span>
         </div>
 
         {/* Region selector */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-subtle)', fontWeight: 600 }}>Region:</span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Region:</span>
           <select
             value={userRegion || 'Global'}
             onChange={(e) => setUserRegion && setUserRegion(e.target.value === 'Global' ? '' : e.target.value)}
             style={{
-              background: 'var(--bg-surface)',
+              background: 'var(--input-bg)',
               border: '1px solid var(--border-color)',
               borderRadius: 'var(--radius-sm)',
-              color: 'var(--text-main)',
+              color: 'var(--input-text)',
               fontSize: '0.78rem',
               padding: '2px 6px',
               cursor: 'pointer'
@@ -94,7 +94,7 @@ const AskAI = ({
 
       {/* Quick Questions Chips */}
       <div style={{ marginBottom: '1.5rem' }}>
-        <span style={{ fontSize: '0.78rem', color: 'var(--text-subtle)', fontWeight: 600, display: 'block', marginBottom: '0.5rem', uppercase: 'true' }}>
+        <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontWeight: 600, display: 'block', marginBottom: '0.5rem', uppercase: 'true' }}>
           Suggested Prompts:
         </span>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
@@ -108,7 +108,7 @@ const AskAI = ({
                 border: '1px solid var(--border-color)',
                 borderRadius: 'var(--radius-full)',
                 padding: '0.3rem 0.75rem',
-                color: 'var(--text-muted)',
+                color: 'var(--text-secondary)',
                 fontSize: '0.8rem',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease'
@@ -134,7 +134,7 @@ const AskAI = ({
             <span className="animate-pulse" style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)' }} />
             Autonomous AI Agent Researching...
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
             <span>✓ Classifying intent & resolving entity references</span>
             <span>● Searching multi-source web evidence & checking live availability</span>
             <span>○ Synthesizing grounded response with verified citations</span>

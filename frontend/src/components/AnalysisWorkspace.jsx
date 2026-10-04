@@ -54,10 +54,10 @@ const AnalysisWorkspace = ({ analysisResult, imagePreview }) => {
           {/* Requirement 7: Object Detection Control Button */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--bg-surface)', padding: '0.85rem 1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
             <div>
-              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)', display: 'block' }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--heading)', display: 'block' }}>
                 Spatial Object Detection
               </span>
-              <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+              <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
                 {totalObjectsCount} object{totalObjectsCount === 1 ? '' : 's'} verified in scene
               </span>
             </div>
@@ -105,7 +105,7 @@ const AnalysisWorkspace = ({ analysisResult, imagePreview }) => {
       {showObjectDetection && (
         <div style={{ marginTop: '2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)' }}>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--heading)' }}>
               Object Instance Details
             </h3>
             {selectedCategory && (
@@ -127,7 +127,7 @@ const AnalysisWorkspace = ({ analysisResult, imagePreview }) => {
                 />
               ))
           ) : (
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
               No detailed object instances found.
             </p>
           )}

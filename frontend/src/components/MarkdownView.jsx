@@ -10,7 +10,7 @@ const MarkdownView = ({ content, maxLength = 240, collapsible = false }) => {
   const displayContent = isLong && !isExpanded ? content.slice(0, maxLength) + '...' : content;
 
   return (
-    <div className="markdown-body" style={{ color: '#E2E8F0', fontSize: '0.9rem', lineHeight: '1.6' }}>
+    <div className="markdown-body">
       <ReactMarkdown>{displayContent}</ReactMarkdown>
       {isLong && (
         <button

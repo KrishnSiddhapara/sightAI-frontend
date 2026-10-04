@@ -98,10 +98,10 @@ const ImageUploader = ({
             accept="image/jpeg,image/jpg,image/png,image/webp"
             style={{ display: 'none' }}
           />
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-main)' }}>
+          <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--heading)' }}>
             Upload Image
           </h3>
-          <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+          <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
             Drag and drop your image here or <span style={{ color: 'var(--primary)', fontWeight: 600 }}>browse files</span>
           </p>
           <div style={{
@@ -110,7 +110,7 @@ const ImageUploader = ({
             padding: '0.35rem 0.85rem',
             borderRadius: 'var(--radius-full)',
             fontSize: '0.8rem',
-            color: 'var(--text-subtle)',
+            color: 'var(--text-secondary)',
             fontWeight: 500
           }}>
             JPG • PNG • WEBP — Max 10 MB
@@ -140,19 +140,19 @@ const ImageUploader = ({
 
             {/* File Info */}
             <div style={{ flex: 1, minWidth: '220px' }}>
-              <div style={{ fontSize: '0.78rem', color: 'var(--success)', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+              <div style={{ fontSize: '0.78rem', color: 'var(--success-text)', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
                 IMAGE READY FOR ANALYSIS
               </div>
               <h4 style={{
                 fontSize: '1.05rem',
                 fontWeight: 700,
-                color: 'var(--text-main)',
+                color: 'var(--heading)',
                 marginBottom: '0.4rem',
                 wordBreak: 'break-all'
               }}>
                 {selectedFile.name}
               </h4>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                 <span>Size: {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</span>
                 {imageDimensions && (
                   <span>Dimensions: {imageDimensions.width} × {imageDimensions.height} px</span>

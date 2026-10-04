@@ -13,10 +13,10 @@ const VersionHistory = ({
     <div className="card-glass" style={{ marginBottom: '2rem', padding: '1.5rem' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
         <div>
-          <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#F8FAFC' }}>
+          <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--heading)' }}>
             Version History ({versionHistory.length})
           </h3>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
             Immutable & non-destructive image versions
           </span>
         </div>
@@ -31,7 +31,7 @@ const VersionHistory = ({
             <div
               key={v.version_number}
               style={{
-                background: isActive ? 'rgba(99, 102, 241, 0.08)' : 'var(--bg-surface)',
+                background: isActive ? 'var(--primary-glow)' : 'var(--bg-surface)',
                 border: `1px solid ${isActive ? 'var(--primary)' : 'var(--border-color)'}`,
                 borderRadius: 'var(--radius-md)',
                 padding: '1rem',
@@ -50,7 +50,7 @@ const VersionHistory = ({
                   height: '70px',
                   borderRadius: 'var(--radius-sm)',
                   overflow: 'hidden',
-                  background: '#070A11',
+                  background: 'var(--bg-secondary)',
                   border: '1px solid var(--border-color)',
                   flexShrink: 0,
                   display: 'flex',
@@ -69,7 +69,7 @@ const VersionHistory = ({
                     <span style={{
                       fontWeight: 700,
                       fontSize: '0.95rem',
-                      color: isActive ? '#A5B4FC' : '#F8FAFC'
+                      color: isActive ? 'var(--primary-text)' : 'var(--heading)'
                     }}>
                       Version {v.version_number}
                     </span>
@@ -89,7 +89,7 @@ const VersionHistory = ({
                     )}
                   </div>
 
-                  <p style={{ fontSize: '0.875rem', color: '#E2E8F0', fontWeight: 500, marginBottom: '0.15rem' }}>
+                  <p style={{ fontSize: '0.875rem', color: 'var(--text-main)', fontWeight: 500, marginBottom: '0.15rem' }}>
                     {isOriginal ? 'Original Uploaded Image' : `"${v.edit_prompt}"`}
                   </p>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-subtle)' }}>
@@ -121,7 +121,7 @@ const VersionHistory = ({
                 <button
                   onClick={() => onDownload(v, 'JPEG')}
                   className="btn-secondary"
-                  style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem', color: '#6EE7B7' }}
+                  style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem', color: 'var(--success-text)' }}
                 >
                   JPG
                 </button>
@@ -129,7 +129,7 @@ const VersionHistory = ({
                 <button
                   onClick={() => onDownload(v, 'PNG')}
                   className="btn-secondary"
-                  style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem', color: '#67E8F9' }}
+                  style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem', color: 'var(--primary-text)' }}
                 >
                   PNG
                 </button>
@@ -137,7 +137,7 @@ const VersionHistory = ({
                 <button
                   onClick={() => onDownload(v, 'PDF')}
                   className="btn-secondary"
-                  style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem', color: '#A5B4FC' }}
+                  style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem', color: 'var(--primary-text)' }}
                 >
                   PDF
                 </button>
