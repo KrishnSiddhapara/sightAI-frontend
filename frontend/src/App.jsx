@@ -179,7 +179,11 @@ function App() {
         setAnalysisResult(res.data);
         setSafetyResult(res.safety || { is_safe: true, category: 'SAFE' });
       } else {
-        setSafetyResult(res.safety || { is_safe: false, category: 'UNSAFE', error: res.error });
+        if (res.safety && !res.safety.is_safe && res.safety.category !== 'UNKNOWN') {
+          setSafetyResult(res.safety);
+        } else {
+          setGlobalError(res.error || 'Image analysis encountered an error.');
+        }
       }
     } catch (err) {
       if (activeRequestId.current !== reqId) return;
@@ -191,8 +195,9 @@ function App() {
         errMsg = 'Analysis took longer than expected due to high image complexity or network latency. Please click "Analyze Image" again to retry.';
       }
 
-      if (err.response?.data?.safety) {
-        setSafetyResult(err.response.data.safety);
+      const returnedSafety = err.response?.data?.safety;
+      if (returnedSafety && !returnedSafety.is_safe && returnedSafety.category !== 'UNKNOWN') {
+        setSafetyResult(returnedSafety);
       } else {
         setGlobalError(errMsg);
       }
