@@ -1,5 +1,26 @@
 import React from 'react';
 
+const formatDisplayTime = (record) => {
+  if (record.formatted_time) {
+    return record.formatted_time;
+  }
+  if (!record.created_at) return 'Just now';
+  
+  try {
+    const d = new Date(record.created_at);
+    if (isNaN(d.getTime())) return record.created_at;
+
+    const day = d.getDate().toString().padStart(2, '0');
+    const month = d.toLocaleString('en-US', { month: 'short' });
+    const year = d.getFullYear();
+    const timeStr = d.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+    return `${day} ${month} ${year} • ${timeStr}`;
+  } catch (e) {
+    return record.created_at;
+  }
+};
+
 const VersionHistory = ({
   versionHistory,
   activeVersionNum,
@@ -17,7 +38,7 @@ const VersionHistory = ({
             Version History ({versionHistory.length})
           </h3>
           <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-            Immutable & non-destructive image versions
+            Immutable edit history with server timestamps & non-destructive image versions
           </span>
         </div>
       </div>
@@ -26,6 +47,7 @@ const VersionHistory = ({
         {versionHistory.map((v) => {
           const isActive = v.version_number === activeVersionNum;
           const isOriginal = v.version_number === 0;
+          const displayTime = formatDisplayTime(v);
 
           return (
             <div
@@ -46,8 +68,8 @@ const VersionHistory = ({
               {/* Left: Thumbnail & Version Meta */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <div style={{
-                  width: '70px',
-                  height: '70px',
+                  width: '74px',
+                  height: '74px',
                   borderRadius: 'var(--radius-sm)',
                   overflow: 'hidden',
                   background: 'var(--bg-secondary)',
@@ -65,7 +87,7 @@ const VersionHistory = ({
                 </div>
 
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem', flexWrap: 'wrap' }}>
                     <span style={{
                       fontWeight: 700,
                       fontSize: '0.95rem',
@@ -73,15 +95,17 @@ const VersionHistory = ({
                     }}>
                       Version {v.version_number}
                     </span>
+
                     {isOriginal ? (
                       <span className="badge-pill badge-primary" style={{ fontSize: '0.65rem', padding: '1px 7px' }}>
                         Original
                       </span>
                     ) : (
                       <span style={{ fontSize: '0.75rem', color: 'var(--text-subtle)' }}>
-                        (Based on v{v.source_version_number})
+                        Based on Version {v.source_version_number ?? 0}
                       </span>
                     )}
+
                     {isActive && (
                       <span className="badge-pill badge-success" style={{ fontSize: '0.65rem', padding: '1px 7px' }}>
                         Active
@@ -89,12 +113,13 @@ const VersionHistory = ({
                     )}
                   </div>
 
-                  <p style={{ fontSize: '0.875rem', color: 'var(--text-main)', fontWeight: 500, marginBottom: '0.15rem' }}>
-                    {isOriginal ? 'Original Uploaded Image' : `"${v.edit_prompt}"`}
+                  <p style={{ fontSize: '0.875rem', color: 'var(--text-main)', fontWeight: 600, marginBottom: '0.2rem' }}>
+                    {isOriginal ? 'Original Uploaded Image' : `Prompt: "${v.edit_prompt}"`}
                   </p>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-subtle)' }}>
-                    Created: {v.created_at || 'Just now'}
-                  </span>
+
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-subtle)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span>{isOriginal ? 'Created:' : 'Edited:'} {displayTime}</span>
+                  </div>
                 </div>
               </div>
 

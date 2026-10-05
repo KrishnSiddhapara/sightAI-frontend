@@ -3,7 +3,7 @@ import MarkdownView from './MarkdownView';
 import SourceList from './SourceList';
 
 const AskAI = ({
-  qaHistory,
+  qaHistory = [],
   onAskQuestion,
   isAsking,
   apiConfigured
@@ -11,11 +11,12 @@ const AskAI = ({
   const [question, setQuestion] = useState('');
 
   const quickQuestions = [
-    "Where can I purchase this item / book?",
-    "What is the current price and availability?",
+    "What is this object in the image?",
+    "Where can I buy this item in India?",
+    "What is its current price and availability?",
     "What processor & technical specs does it have?",
-    "Compare this product with alternatives",
-    "What color is the object in this image?"
+    "Compare price across Amazon India and Flipkart",
+    "Explain how RAG works in AI"
   ];
 
   const handleSubmit = (e) => {
@@ -34,10 +35,10 @@ const AskAI = ({
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
         <div>
           <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--heading)' }}>
-            AI Research Agent & Visual Q&A
+            Gemini Ask AI Agent
           </h3>
           <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-            Answers visual queries or researches live market prices, technical specs, purchase options, and verified web sources
+            Autonomous AI Agent with visual reasoning, live web search, India-first product research, and multi-turn conversation context
           </span>
         </div>
       </div>
@@ -49,7 +50,7 @@ const AskAI = ({
             type="text"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Ask anything (e.g. Where can I purchase this? / What is its price? / Compare with iPhone 17)..."
+            placeholder="Ask anything (e.g. What is this? / Where can I buy this in India? / Compare prices / Explain technical concept)..."
             className="input-base"
             style={{ flex: 1, minWidth: '260px' }}
             disabled={isAsking}
@@ -60,14 +61,14 @@ const AskAI = ({
             className="btn-primary"
             style={{ padding: '0.75rem 1.5rem', whiteSpace: 'nowrap' }}
           >
-            {isAsking ? 'Researching...' : 'Ask Agent'}
+            {isAsking ? 'Agent Thinking...' : 'Ask Agent'}
           </button>
         </div>
       </form>
 
       {/* Quick Questions Chips */}
       <div style={{ marginBottom: '1.5rem' }}>
-        <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontWeight: 600, display: 'block', marginBottom: '0.5rem', uppercase: 'true' }}>
+        <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontWeight: 600, display: 'block', marginBottom: '0.5rem' }}>
           Suggested Prompts:
         </span>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
@@ -93,7 +94,7 @@ const AskAI = ({
         </div>
       </div>
 
-      {/* Research Loading State Indicator */}
+      {/* Agent Processing Loading State Indicator */}
       {isAsking && (
         <div style={{
           background: 'var(--primary-glow)',
@@ -105,25 +106,26 @@ const AskAI = ({
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)', fontWeight: 600, marginBottom: '0.5rem' }}>
             <span className="animate-pulse" style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)' }} />
-            Autonomous AI Agent Researching...
+            Gemini AI Agent Executing Query Plan...
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-            <span>✓ Classifying intent & resolving entity references</span>
-            <span>● Searching multi-source web evidence & checking live availability</span>
-            <span>○ Synthesizing grounded response with verified citations</span>
+            <span>✓ Classifying intent & resolving conversation entity references</span>
+            <span>● Evaluating visual context & high-quality image details</span>
+            <span>○ Searching live web evidence with India-first priority for shopping</span>
+            <span>○ Synthesizing comprehensive grounded response</span>
           </div>
         </div>
       )}
 
-      {/* Chat History List */}
+      {/* Chat Conversation History List */}
       <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1.25rem' }}>
         {qaHistory.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--text-subtle)' }}>
             <p style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-muted)' }}>
-              No research queries submitted yet
+              No agent queries submitted yet
             </p>
             <span style={{ fontSize: '0.8rem' }}>
-              Ask a question above or click a suggestion to start AI research.
+              Ask a question above or click a prompt suggestion to start Gemini AI Agent conversation.
             </span>
           </div>
         ) : (
@@ -156,20 +158,20 @@ const AskAI = ({
                     background: 'var(--bg-surface)',
                     border: '1px solid var(--border-color)',
                     color: 'var(--text-main)',
-                    padding: '1rem',
+                    padding: '1.25rem',
                     borderRadius: 'var(--radius-md)',
-                    borderLeft: `3px solid ${isResearched ? 'var(--success)' : 'var(--secondary)'}`,
+                    borderLeft: `3px solid ${isResearched ? 'var(--success)' : 'var(--primary)'}`,
                     fontSize: '0.9rem',
                     lineHeight: 1.65
                   }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                       <span style={{
                         fontSize: '0.72rem',
-                        color: isResearched ? 'var(--success)' : 'var(--secondary)',
+                        color: isResearched ? 'var(--success)' : 'var(--primary)',
                         fontWeight: 700,
                         textTransform: 'uppercase',
                         background: isResearched ? 'var(--success-bg)' : 'var(--primary-glow)',
-                        padding: '1px 7px',
+                        padding: '2px 8px',
                         borderRadius: 'var(--radius-full)',
                         border: `1px solid ${isResearched ? 'var(--success-border)' : 'var(--border-color)'}`
                       }}>
@@ -186,7 +188,7 @@ const AskAI = ({
                     {/* Rendered Answer Content */}
                     <MarkdownView content={item.answer} collapsible={false} />
 
-                    {/* Verified Source Cards */}
+                    {/* Source Cards */}
                     {item.sources && item.sources.length > 0 && (
                       <SourceList sources={item.sources} />
                     )}

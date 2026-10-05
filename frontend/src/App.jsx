@@ -11,7 +11,9 @@ import ImageComparison from './components/ImageComparison';
 import AskAI from './components/AskAI';
 import EmptyState from './components/EmptyState';
 
-import { getHealth, analyzeImage, editImage, askQuestion, researchWithAgent, exportImage } from './services/api';
+import { getHealth, analyzeImage, editImage, researchWithAgent, exportImage } from './services/api';
+
+const SESSION_STORAGE_KEY = 'sightai_session_state_v1';
 
 function App() {
   const [activeTab, setActiveTab] = useState('analyze'); // 'analyze' | 'edit' | 'ask' | 'history'
@@ -63,10 +65,53 @@ function App() {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
   };
 
-  // Check Backend Health on mount
+  // Check Backend Health & restore persisted session on mount
   useEffect(() => {
     checkBackendHealth();
+    restorePersistedSession();
   }, []);
+
+  // Save session state to localStorage whenever version history or QA history updates
+  useEffect(() => {
+    if (versionHistory.length > 0 || qaHistory.length > 0 || analysisResult) {
+      try {
+        const sessionData = {
+          imagePreview,
+          imageDimensions,
+          analysisResult,
+          safetyResult,
+          versionHistory,
+          activeVersionNum,
+          sourceVersionNum,
+          qaHistory
+        };
+        localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(sessionData));
+      } catch (err) {
+        console.warn('Could not persist session state to localStorage:', err);
+      }
+    }
+  }, [imagePreview, imageDimensions, analysisResult, safetyResult, versionHistory, activeVersionNum, sourceVersionNum, qaHistory]);
+
+  const restorePersistedSession = () => {
+    try {
+      const saved = localStorage.getItem(SESSION_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.imagePreview && Array.isArray(parsed.versionHistory) && parsed.versionHistory.length > 0) {
+          setImagePreview(parsed.imagePreview);
+          setImageDimensions(parsed.imageDimensions || null);
+          setAnalysisResult(parsed.analysisResult || null);
+          setSafetyResult(parsed.safetyResult || { is_safe: true, category: 'SAFE' });
+          setVersionHistory(parsed.versionHistory);
+          setActiveVersionNum(parsed.activeVersionNum ?? 0);
+          setSourceVersionNum(parsed.sourceVersionNum ?? 0);
+          setQaHistory(parsed.qaHistory || []);
+        }
+      }
+    } catch (e) {
+      console.warn('Session restoration skipped:', e);
+    }
+  };
 
   const checkBackendHealth = async () => {
     try {
@@ -80,9 +125,22 @@ function App() {
     }
   };
 
+  // Helper to format clean display timestamps
+  const getFormattedTimestamp = () => {
+    const d = new Date();
+    const day = d.getDate().toString().padStart(2, '0');
+    const month = d.toLocaleString('en-US', { month: 'short' });
+    const year = d.getFullYear();
+    const timeStr = d.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    return {
+      iso: d.toISOString(),
+      formatted: `${day} ${month} ${year} • ${timeStr}`
+    };
+  };
+
   // Handle Image File Selection
   const handleFileSelect = (file) => {
-    activeRequestId.current = Date.now(); // Invalidate any running analysis request
+    activeRequestId.current = Date.now();
     setSelectedFile(file);
     setAnalysisResult(null);
     setSafetyResult(null);
@@ -104,13 +162,18 @@ function App() {
       };
       img.src = b64Data;
 
-      // Initialize Version 0 (Original Upload)
+      const ts = getFormattedTimestamp();
+
+      // Initialize Version 0 (Original Upload) with backend/server timestamp compatibility
       const initialVer = {
+        version_id: 'v0',
         version_number: 0,
         image_base64: b64Data,
         edit_prompt: 'Original Upload',
         source_version_number: 0,
-        created_at: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+        parent_version_id: 'v0',
+        created_at: ts.iso,
+        formatted_time: ts.formatted
       };
       setVersionHistory([initialVer]);
       setActiveVersionNum(0);
@@ -119,9 +182,9 @@ function App() {
     reader.readAsDataURL(file);
   };
 
-  // Remove Selected Image
+  // Remove Selected Image & clear session storage
   const handleRemoveImage = () => {
-    activeRequestId.current = Date.now(); // Invalidate any running analysis request
+    activeRequestId.current = Date.now();
     setSelectedFile(null);
     setImagePreview(null);
     setImageDimensions(null);
@@ -134,11 +197,14 @@ function App() {
     setEditSafetyResult(null);
     setGlobalError(null);
     setIsAnalyzing(false);
+    try {
+      localStorage.removeItem(SESSION_STORAGE_KEY);
+    } catch (e) {}
   };
 
   // Trigger AI Vision Analysis Pipeline
   const handleAnalyze = async () => {
-    if (!selectedFile || isAnalyzing) return;
+    if (!selectedFile && !imagePreview) return;
 
     const reqId = Date.now();
     activeRequestId.current = reqId;
@@ -161,23 +227,27 @@ function App() {
     setProgressStep('understanding');
 
     try {
-      // Step 4: Verifying objects & bounding boxes
       setProgressStep('verifying');
-      const res = await analyzeImage(selectedFile);
-
-      if (activeRequestId.current !== reqId) {
-        console.warn('Discarding stale analysis response from previous image.');
-        return;
+      
+      let res;
+      if (selectedFile) {
+        res = await analyzeImage(selectedFile);
+      } else if (imagePreview) {
+        // Fallback for restored base64 image
+        const blob = await (await fetch(imagePreview)).blob();
+        const dummyFile = new File([blob], "restored_image.jpg", { type: "image/jpeg" });
+        res = await analyzeImage(dummyFile);
       }
 
-      // Step 5: Preparing results
+      if (activeRequestId.current !== reqId) return;
+
       setProgressStep('preparing');
       await new Promise(r => setTimeout(r, 200));
 
-      if (res.success) {
+      if (res && res.success) {
         setAnalysisResult(res.data);
         setSafetyResult(res.safety || { is_safe: true, category: 'SAFE' });
-      } else {
+      } else if (res) {
         if (res.safety && !res.safety.is_safe && res.safety.category !== 'UNKNOWN') {
           setSafetyResult(res.safety);
         } else {
@@ -220,18 +290,24 @@ function App() {
       const res = await editImage({
         imageBase64: baseVerObj.image_base64,
         instruction: instructionText,
-        visionContextJson: analysisResult
+        visionContextJson: analysisResult,
+        sourceVersionNumber: sourceVersionNum
       });
 
       if (res.success && res.is_safe && res.image_base64) {
-        // Safe generated edit -> Create next version
+        // Safe generated edit -> Create next version record with backend server timestamp
         const nextVerNum = Math.max(...versionHistory.map(v => v.version_number), 0) + 1;
+        const ts = getFormattedTimestamp();
+
         const newVerRec = {
+          version_id: res.version_id || `v${nextVerNum}`,
           version_number: nextVerNum,
           image_base64: res.image_base64,
-          edit_prompt: instructionText,
+          edit_prompt: instructionText.strip ? instructionText.strip() : instructionText,
           source_version_number: sourceVersionNum,
-          created_at: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+          parent_version_id: `v${sourceVersionNum}`,
+          created_at: res.created_at || ts.iso,
+          formatted_time: res.formatted_time || ts.formatted
         };
 
         setVersionHistory(prev => [...prev, newVerRec]);
@@ -239,7 +315,6 @@ function App() {
         setSourceVersionNum(nextVerNum);
         setActiveTab('history');
       } else {
-        // Unsafe edit -> Reject output image, preserve history
         setEditSafetyResult(res.safety || { is_safe: false, error: res.error || 'Generated edit was rejected by safety gate.' });
       }
     } catch (err) {
@@ -255,16 +330,20 @@ function App() {
     }
   };
 
+  // Active Version Object
+  const activeVersionObj = versionHistory.find(v => v.version_number === activeVersionNum) || versionHistory[0];
 
-
-  // Trigger Grounded AI Research Agent Q&A
+  // Trigger Grounded Gemini Ask AI Agent Q&A
   const handleAskQuestion = async (questionText) => {
     setIsAsking(true);
     setGlobalError(null);
 
     try {
+      const activeBase64 = activeVersionObj?.image_base64 || imagePreview;
+
       const res = await researchWithAgent({
         question: questionText,
+        imageBase64: activeBase64,
         imageContext: analysisResult,
         conversationHistory: qaHistory
       });
@@ -275,19 +354,21 @@ function App() {
           {
             question: questionText,
             answer: res.answer,
+            intent: res.intent || 'GENERAL_KNOWLEDGE',
             used_tools: res.used_tools || [],
             sources: res.sources || [],
             confidence: res.confidence || 'high',
-            requires_research: res.requires_research || false
+            requires_research: res.requires_research || false,
+            entity: res.entity || null
           }
         ]);
       } else {
-        setGlobalError(`Research Agent Error: ${res.error || 'Failed to generate research response.'}`);
+        setGlobalError(`Ask AI Agent Error: ${res.error || 'Failed to generate response.'}`);
       }
     } catch (err) {
       console.error('Q&A error:', err);
       const errMsg = err.response?.data?.detail || err.message || 'Unable to process question.';
-      setGlobalError(`Visual Q&A Error: ${errMsg}`);
+      setGlobalError(`Ask AI Error: ${errMsg}`);
     } finally {
       setIsAsking(false);
     }
@@ -314,9 +395,6 @@ function App() {
       setGlobalError('Failed to download image file.');
     }
   };
-
-  // Active Version Object
-  const activeVersionObj = versionHistory.find(v => v.version_number === activeVersionNum) || versionHistory[0];
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -379,7 +457,7 @@ function App() {
         )}
 
         {/* MAIN TAB WORKSPACES */}
-        {selectedFile && safetyResult?.is_safe && (
+        {imagePreview && (safetyResult === null || safetyResult?.is_safe) && (
           <>
             {/* TAB 1: ANALYZE */}
             {activeTab === 'analyze' && (
@@ -426,7 +504,6 @@ function App() {
                 onAskQuestion={handleAskQuestion}
                 isAsking={isAsking}
                 apiConfigured={apiConfigured}
-                imageContext={analysisResult}
               />
             )}
 
@@ -457,7 +534,7 @@ function App() {
         )}
 
         {/* Empty State when no file uploaded */}
-        {!selectedFile && <EmptyState type="upload" />}
+        {!imagePreview && <EmptyState type="upload" />}
       </main>
 
       {/* Footer */}
@@ -472,7 +549,7 @@ function App() {
         transition: 'background var(--transition-normal)'
       }}>
         <div style={{ maxWidth: '1320px', margin: '0 auto' }}>
-          SightAI — Enterprise Multimodal Vision & AI Research Agent
+          SightAI — Enterprise Multimodal Vision & Gemini AI Agent
         </div>
       </footer>
     </div>

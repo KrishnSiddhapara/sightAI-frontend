@@ -22,7 +22,7 @@ const SourceList = ({ sources = [] }) => {
     <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
         <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontWeight: 700, letterSpacing: '0.05em' }}>
-          VERIFIED SOURCES & LINKS ({sources.length})
+          SOURCES & REFERENCE LINKS ({sources.length})
         </span>
         <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
           Click to open external page

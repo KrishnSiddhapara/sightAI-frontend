@@ -42,7 +42,7 @@ export const analyzeImage = async (file) => {
   return response.data;
 };
 
-export const editImage = async ({ file, imageBase64, instruction, visionContextJson }) => {
+export const editImage = async ({ file, imageBase64, instruction, visionContextJson, sourceVersionNumber }) => {
   const formData = new FormData();
   if (file) {
     formData.append('file', file);
@@ -54,6 +54,9 @@ export const editImage = async ({ file, imageBase64, instruction, visionContextJ
   if (visionContextJson) {
     formData.append('vision_context_json', JSON.stringify(visionContextJson));
   }
+  if (sourceVersionNumber !== undefined) {
+    formData.append('source_version_number', sourceVersionNumber);
+  }
   
   const response = await api.post('/edit', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
@@ -62,26 +65,22 @@ export const editImage = async ({ file, imageBase64, instruction, visionContextJ
   return response.data;
 };
 
-export const askQuestion = async ({ file, imageBase64, question }) => {
-  const formData = new FormData();
-  if (file) {
-    formData.append('file', file);
-  }
-  if (imageBase64) {
-    formData.append('image_base64', imageBase64);
-  }
-  formData.append('question', question);
-
-  const response = await api.post('/ask', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
+export const askQuestion = async ({ file, imageBase64, question, imageContext, conversationHistory }) => {
+  const response = await api.post('/ask', {
+    question,
+    image_base64: imageBase64 || null,
+    image_context: imageContext || null,
+    conversation_history: conversationHistory || []
+  }, {
     timeout: 120000,
   });
   return response.data;
 };
 
-export const researchWithAgent = async ({ question, imageContext, conversationHistory, userRegion }) => {
+export const researchWithAgent = async ({ question, imageBase64, imageContext, conversationHistory, userRegion }) => {
   const response = await api.post('/agent/research', {
     question,
+    image_base64: imageBase64 || null,
     image_context: imageContext || null,
     conversation_history: conversationHistory || [],
     user_region: userRegion || null
