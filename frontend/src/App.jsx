@@ -137,53 +137,13 @@ function App() {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
   };
 
-  // Check Backend Health & restore persisted session on mount
+  // Check Backend Health on mount & ensure fresh state startup
   useEffect(() => {
     checkBackendHealth();
-    restorePersistedSession();
-  }, []);
-
-  // Save session state to localStorage whenever version history or QA history updates
-  useEffect(() => {
-    if (versionHistory.length > 0 || qaHistory.length > 0 || analysisResult) {
-      try {
-        const sessionData = {
-          imagePreview,
-          imageDimensions,
-          analysisResult,
-          safetyResult,
-          versionHistory,
-          activeVersionNum,
-          sourceVersionNum,
-          qaHistory
-        };
-        localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(sessionData));
-      } catch (err) {
-        console.warn('Could not persist session state to localStorage:', err);
-      }
-    }
-  }, [imagePreview, imageDimensions, analysisResult, safetyResult, versionHistory, activeVersionNum, sourceVersionNum, qaHistory]);
-
-  const restorePersistedSession = () => {
     try {
-      const saved = localStorage.getItem(SESSION_STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed.imagePreview && Array.isArray(parsed.versionHistory) && parsed.versionHistory.length > 0) {
-          setImagePreview(parsed.imagePreview);
-          setImageDimensions(parsed.imageDimensions || null);
-          setAnalysisResult(parsed.analysisResult || null);
-          setSafetyResult(parsed.safetyResult || { is_safe: true, category: 'SAFE' });
-          setVersionHistory(parsed.versionHistory);
-          setActiveVersionNum(parsed.activeVersionNum ?? 0);
-          setSourceVersionNum(parsed.sourceVersionNum ?? 0);
-          setQaHistory(parsed.qaHistory || []);
-        }
-      }
-    } catch (e) {
-      console.warn('Session restoration skipped:', e);
-    }
-  };
+      localStorage.removeItem(SESSION_STORAGE_KEY);
+    } catch (e) {}
+  }, []);
 
   const checkBackendHealth = async () => {
     try {
