@@ -3,9 +3,18 @@ import axios from 'axios';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const API_BASE_URL = `${API_URL.replace(/\/$/, '')}/api`;
 
+const generateRequestId = () => `req_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 120000, // 120 seconds (2 minutes)
+});
+
+api.interceptors.request.use((config) => {
+  if (!config.headers['X-Request-ID']) {
+    config.headers['X-Request-ID'] = generateRequestId();
+  }
+  return config;
 });
 
 export const getHealth = async () => {

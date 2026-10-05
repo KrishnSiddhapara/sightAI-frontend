@@ -12,17 +12,6 @@ const SceneCard = ({ scene }) => {
         <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-subtle)', uppercase: 'true', letterSpacing: '0.05em' }}>
           SCENE UNDERSTANDING
         </h4>
-        <span style={{
-          fontSize: '0.8rem',
-          fontWeight: 700,
-          color: 'var(--primary)',
-          background: 'rgba(99, 102, 241, 0.12)',
-          border: '1px solid rgba(99, 102, 241, 0.25)',
-          padding: '2px 8px',
-          borderRadius: 'var(--radius-full)'
-        }}>
-          {scene.category || 'General Scene'}
-        </span>
       </div>
 
       {/* Short Scene Summary */}

@@ -41,7 +41,6 @@ function App() {
   // Grounded Q&A State
   const [qaHistory, setQaHistory] = useState([]);
   const [isAsking, setIsAsking] = useState(false);
-  const [userRegion, setUserRegion] = useState('Global');
 
   // Theme System State ('light' default, or persisted preference)
   const [theme, setTheme] = useState(() => {
@@ -267,8 +266,7 @@ function App() {
       const res = await researchWithAgent({
         question: questionText,
         imageContext: analysisResult,
-        conversationHistory: qaHistory,
-        userRegion: userRegion
+        conversationHistory: qaHistory
       });
 
       if (res.success) {
@@ -429,8 +427,6 @@ function App() {
                 isAsking={isAsking}
                 apiConfigured={apiConfigured}
                 imageContext={analysisResult}
-                userRegion={userRegion}
-                setUserRegion={setUserRegion}
               />
             )}
 

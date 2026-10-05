@@ -232,7 +232,54 @@ const ObjectDetectionViewer = ({
                 boxShadow = `0 0 20px ${color.border}`;
               }
 
-              const displayLabel = instance.id.replace('_', ' ');
+              const displayLabel = instance.id ? instance.id.replace('_', ' ') : (categoryName || 'object');
+              const labelWidthEst = Math.min(180, Math.max(60, displayLabel.length * 7.5 + 20));
+
+              // Dynamic Boundary-Aware Positioning
+              const isNearTopEdge = top < 26;
+              const isNearRightEdge = (left + labelWidthEst) > renderBounds.displayedWidth;
+
+              const labelStyle = {
+                position: 'absolute',
+                background: 'rgba(15, 23, 42, 0.94)',
+                color: '#F8FAFC',
+                border: `1px solid ${color.border}`,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+                fontSize: '0.7rem',
+                fontWeight: 700,
+                padding: '2px 8px',
+                borderRadius: '4px',
+                whiteSpace: 'nowrap',
+                maxWidth: `${Math.min(180, Math.max(100, renderBounds.displayedWidth - 16))}px`,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                pointerEvents: 'none',
+                fontFamily: 'var(--font-mono)',
+                textTransform: 'uppercase',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                zIndex: 15
+              };
+
+              // Vertical placement logic
+              if (isNearTopEdge) {
+                if (height >= 30) {
+                  labelStyle.top = '4px';
+                } else {
+                  labelStyle.top = `${height + 4}px`;
+                }
+              } else {
+                labelStyle.top = '-24px';
+              }
+
+              // Horizontal placement logic
+              if (isNearRightEdge) {
+                labelStyle.left = 'auto';
+                labelStyle.right = '0px';
+              } else {
+                labelStyle.left = Math.max(0, left < 0 ? -left : -2) + 'px';
+              }
 
               return (
                 <div
@@ -262,25 +309,19 @@ const ObjectDetectionViewer = ({
                     boxSizing: 'border-box'
                   }}
                 >
-                  {/* Instance Badge Label */}
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: '-22px',
-                      left: '-2px',
-                      background: color.labelBg,
-                      color: '#FFFFFF',
-                      fontSize: '0.7rem',
-                      fontWeight: 700,
-                      padding: '2px 6px',
-                      borderRadius: '3px',
-                      whiteSpace: 'nowrap',
-                      pointerEvents: 'none',
-                      fontFamily: 'var(--font-mono)',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    {displayLabel}
+                  {/* Dynamic Boundary-Safe Instance Label */}
+                  <div style={labelStyle}>
+                    <span style={{
+                      display: 'inline-block',
+                      width: '6px',
+                      height: '6px',
+                      borderRadius: '50%',
+                      backgroundColor: color.border,
+                      flexShrink: 0
+                    }} />
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {displayLabel}
+                    </span>
                   </div>
                 </div>
               );

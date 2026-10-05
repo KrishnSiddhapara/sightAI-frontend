@@ -6,9 +6,7 @@ const AskAI = ({
   qaHistory,
   onAskQuestion,
   isAsking,
-  apiConfigured,
-  userRegion,
-  setUserRegion
+  apiConfigured
 }) => {
   const [question, setQuestion] = useState('');
 
@@ -41,31 +39,6 @@ const AskAI = ({
           <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
             Answers visual queries or researches live market prices, technical specs, purchase options, and verified web sources
           </span>
-        </div>
-
-        {/* Region selector */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Region:</span>
-          <select
-            value={userRegion || 'Global'}
-            onChange={(e) => setUserRegion && setUserRegion(e.target.value === 'Global' ? '' : e.target.value)}
-            style={{
-              background: 'var(--input-bg)',
-              border: '1px solid var(--border-color)',
-              borderRadius: 'var(--radius-sm)',
-              color: 'var(--input-text)',
-              fontSize: '0.78rem',
-              padding: '2px 6px',
-              cursor: 'pointer'
-            }}
-          >
-            <option value="Global">Global</option>
-            <option value="United States">United States</option>
-            <option value="India">India</option>
-            <option value="United Kingdom">United Kingdom</option>
-            <option value="Canada">Canada</option>
-            <option value="Germany">Germany</option>
-          </select>
         </div>
       </div>
 
