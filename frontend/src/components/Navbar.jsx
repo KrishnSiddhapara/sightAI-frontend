@@ -61,7 +61,7 @@ const Navbar = ({ activeTab, setActiveTab, apiConnected, apiConfigured, theme, t
                 fontWeight: 600,
                 fontFamily: 'var(--font-mono)'
               }}>
-                Enterprise Agent
+
               </span>
             </div>
             <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', display: 'block' }}>

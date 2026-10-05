@@ -1,24 +1,26 @@
 import React from 'react';
 
 const formatDisplayTime = (record) => {
+  if (!record) return 'Just now';
+
+  if (record.created_at) {
+    try {
+      const d = new Date(record.created_at);
+      if (!isNaN(d.getTime())) {
+        const day = d.getDate().toString().padStart(2, '0');
+        const month = d.toLocaleString('en-US', { month: 'short' });
+        const year = d.getFullYear();
+        const timeStr = d.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        return `${day} ${month} ${year} • ${timeStr}`;
+      }
+    } catch (e) {}
+  }
+
   if (record.formatted_time) {
     return record.formatted_time;
   }
-  if (!record.created_at) return 'Just now';
-  
-  try {
-    const d = new Date(record.created_at);
-    if (isNaN(d.getTime())) return record.created_at;
 
-    const day = d.getDate().toString().padStart(2, '0');
-    const month = d.toLocaleString('en-US', { month: 'short' });
-    const year = d.getFullYear();
-    const timeStr = d.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-
-    return `${day} ${month} ${year} • ${timeStr}`;
-  } catch (e) {
-    return record.created_at;
-  }
+  return 'Just now';
 };
 
 const VersionHistory = ({

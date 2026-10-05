@@ -35,11 +35,9 @@ const AskAI = ({
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
         <div>
           <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--heading)' }}>
-            Gemini Ask AI Agent
+            Ask AI Agent
           </h3>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-            Autonomous AI Agent with visual reasoning, live web search, India-first product research, and multi-turn conversation context
-          </span>
+
         </div>
       </div>
 
@@ -133,7 +131,7 @@ const AskAI = ({
             {qaHistory.map((item, idx) => {
               const isResearched = item.requires_research;
               const intentTag = item.intent ? item.intent.replace(/_/g, ' ') : (isResearched ? 'WEB RESEARCH' : 'VISUAL ANALYSIS');
-              
+
               return (
                 <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                   {/* User Question */}

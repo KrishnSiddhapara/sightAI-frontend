@@ -13,7 +13,7 @@ const HeroSection = () => {
           INTERACTIVE AI AGENT & VISION
         </span>
       </div>
-      
+
       <h1 style={{
         fontSize: '2.4rem',
         fontWeight: 800,
@@ -22,7 +22,7 @@ const HeroSection = () => {
         color: 'var(--heading)',
         letterSpacing: '-0.03em'
       }}>
-        Precision Object Identification & AI Research Agent
+        Object Identification & AI Research Agent
       </h1>
 
       <p style={{
@@ -31,7 +31,7 @@ const HeroSection = () => {
         fontWeight: 400,
         lineHeight: 1.5
       }}>
-        Upload an image to perform grounded physical instance verification, spatial bounding box localization, multi-version editing, and real-time AI web research.
+        Upload an image to perform physical instance verification, spatial bounding box localization, multi-version editing, and real-time AI web research.
       </p>
     </div>
   );

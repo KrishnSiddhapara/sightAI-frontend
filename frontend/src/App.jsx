@@ -549,7 +549,7 @@ function App() {
         transition: 'background var(--transition-normal)'
       }}>
         <div style={{ maxWidth: '1320px', margin: '0 auto' }}>
-          SightAI — Enterprise Multimodal Vision & Gemini AI Agent
+          SightAI —  Multimodal Vision & Gemini AI Agent
         </div>
       </footer>
     </div>
