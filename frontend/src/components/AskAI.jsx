@@ -184,7 +184,7 @@ const AskAI = ({
                     </div>
 
                     {/* Rendered Answer Content */}
-                    <MarkdownView content={item.answer} collapsible={true} maxLength={450} />
+                    <MarkdownView content={item.answer} collapsible={false} />
 
                     {/* Verified Source Cards */}
                     {item.sources && item.sources.length > 0 && (

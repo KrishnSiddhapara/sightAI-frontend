@@ -16,13 +16,10 @@ const StatsCards = ({ analysisData }) => {
   const personCategories = objects.filter(cat => cat.name.toLowerCase() === 'person');
   const totalPeopleCount = personCategories.reduce((sum, cat) => sum + (cat.confirmed_count || 0), 0);
 
-  const sceneCategory = analysisData.scene?.category || 'General Scene';
-
   const stats = [
     { label: 'Objects Verified', value: totalObjectsCount },
     { label: 'Spatial Bounding Boxes', value: localizedCount },
     { label: 'People Count', value: totalPeopleCount },
-    { label: 'Scene Category', value: sceneCategory },
   ];
 
   return (
