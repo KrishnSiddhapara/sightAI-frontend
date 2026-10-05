@@ -76,7 +76,7 @@ const ImageUploader = ({
         </div>
       )}
 
-      {!selectedFile ? (
+      {!imagePreview ? (
         <div
           onDrop={handleDrop}
           onDragOver={handleDragOver}
@@ -151,10 +151,12 @@ const ImageUploader = ({
                 marginBottom: '0.4rem',
                 wordBreak: 'break-all'
               }}>
-                {selectedFile.name}
+                {selectedFile?.name || 'Uploaded Image'}
               </h4>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                <span>Size: {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</span>
+                {selectedFile?.size && (
+                  <span>Size: {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</span>
+                )}
                 {imageDimensions && (
                   <span>Dimensions: {imageDimensions.width} × {imageDimensions.height} px</span>
                 )}
