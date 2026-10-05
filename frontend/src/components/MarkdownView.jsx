@@ -11,7 +11,22 @@ const MarkdownView = ({ content, maxLength = 240, collapsible = false }) => {
 
   return (
     <div className="markdown-body">
-      <ReactMarkdown>{displayContent}</ReactMarkdown>
+      <ReactMarkdown
+        components={{
+          a: ({ node, children, href, ...props }) => (
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              {...props}
+            >
+              {children}
+            </a>
+          )
+        }}
+      >
+        {displayContent}
+      </ReactMarkdown>
       {isLong && (
         <button
           type="button"

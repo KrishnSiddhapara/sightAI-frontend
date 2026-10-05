@@ -60,7 +60,7 @@ const ImageEditor = ({
           AI Image Editor (Multi-Version)
         </h3>
         <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-          Instruct Gemini to modify, add, or remove objects with version control (Max image size: 5 MB)
+          Instruct Gemini to modify, add, or remove objects with version control (Max image size: 6 MB / 6144 KB)
         </span>
       </div>
 
