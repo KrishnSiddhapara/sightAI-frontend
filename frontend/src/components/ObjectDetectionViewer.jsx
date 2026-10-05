@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { imageCoordinatesToDisplayCoordinates } from '../utils/coordinateTransform';
 
 /**
  * Color palette for object categories/instances
@@ -30,6 +31,10 @@ const ObjectDetectionViewer = ({
   const imgRef = useRef(null);
 
   const [renderBounds, setRenderBounds] = useState({
+    containerWidth: 0,
+    containerHeight: 0,
+    naturalWidth: 0,
+    naturalHeight: 0,
     displayedWidth: 0,
     displayedHeight: 0,
     offsetLeft: 0,
@@ -76,6 +81,10 @@ const ObjectDetectionViewer = ({
     }
 
     setRenderBounds({
+      containerWidth,
+      containerHeight,
+      naturalWidth: img.naturalWidth,
+      naturalHeight: img.naturalHeight,
       displayedWidth,
       displayedHeight,
       offsetLeft,
@@ -180,20 +189,22 @@ const ObjectDetectionViewer = ({
             }}
           >
             {allInstancesWithBoxes.map(({ categoryName, instance, color }) => {
-              const bbox = instance.bounding_box;
-              if (!bbox) return null;
+              const transform = imageCoordinatesToDisplayCoordinates({
+                bbox: instance.bounding_box,
+                containerWidth: renderBounds.containerWidth,
+                containerHeight: renderBounds.containerHeight,
+                naturalWidth: renderBounds.naturalWidth,
+                naturalHeight: renderBounds.naturalHeight,
+                objectFit: 'contain'
+              });
 
-              const x_min = Number(bbox.x_min) || 0;
-              const y_min = Number(bbox.y_min) || 0;
-              const x_max = Number(bbox.x_max) || x_min;
-              const y_max = Number(bbox.y_max) || y_min;
+              if (!transform) return null;
 
-              if (x_max <= x_min || y_max <= y_min) return null;
-
-              const left = (x_min / 1000) * renderBounds.displayedWidth;
-              const top = (y_min / 1000) * renderBounds.displayedHeight;
-              const width = ((x_max - x_min) / 1000) * renderBounds.displayedWidth;
-              const height = ((y_max - y_min) / 1000) * renderBounds.displayedHeight;
+              // Position relative to rendered image overlay (which is already offset by renderBounds.offsetLeft/offsetTop)
+              const relLeft = transform.normX1 * renderBounds.displayedWidth;
+              const relTop = transform.normY1 * renderBounds.displayedHeight;
+              const width = (transform.normX2 - transform.normX1) * renderBounds.displayedWidth;
+              const height = (transform.normY2 - transform.normY1) * renderBounds.displayedHeight;
 
               const isInstanceActive = selectedInstance === instance.id;
               const isCategoryActive = selectedCategory?.toLowerCase() === categoryName.toLowerCase();
@@ -236,8 +247,8 @@ const ObjectDetectionViewer = ({
               const labelWidthEst = Math.min(180, Math.max(60, displayLabel.length * 7.5 + 20));
 
               // Dynamic Boundary-Aware Positioning
-              const isNearTopEdge = top < 26;
-              const isNearRightEdge = (left + labelWidthEst) > renderBounds.displayedWidth;
+              const isNearTopEdge = relTop < 26;
+              const isNearRightEdge = (relLeft + labelWidthEst) > renderBounds.displayedWidth;
 
               const labelStyle = {
                 position: 'absolute',
@@ -278,7 +289,7 @@ const ObjectDetectionViewer = ({
                 labelStyle.left = 'auto';
                 labelStyle.right = '0px';
               } else {
-                labelStyle.left = Math.max(0, left < 0 ? -left : -2) + 'px';
+                labelStyle.left = Math.max(0, relLeft < 0 ? -relLeft : -2) + 'px';
               }
 
               return (
@@ -294,8 +305,8 @@ const ObjectDetectionViewer = ({
                   onMouseLeave={() => onHoverInstance && onHoverInstance(null)}
                   style={{
                     position: 'absolute',
-                    left: `${left}px`,
-                    top: `${top}px`,
+                    left: `${relLeft}px`,
+                    top: `${relTop}px`,
                     width: `${width}px`,
                     height: `${height}px`,
                     border: `${borderWidth} solid ${color.border}`,
@@ -334,3 +345,4 @@ const ObjectDetectionViewer = ({
 };
 
 export default ObjectDetectionViewer;
+

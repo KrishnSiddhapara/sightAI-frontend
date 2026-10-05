@@ -8,7 +8,8 @@ const ImageUploader = ({
   onRemoveImage,
   onAnalyze,
   isAnalyzing,
-  apiConfigured
+  apiConfigured,
+  analysisTimer
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [validationError, setValidationError] = useState(null);
@@ -186,16 +187,81 @@ const ImageUploader = ({
             </div>
           </div>
 
-          {/* Primary CTA Button */}
+          {/* Primary CTA Button & Live Timer */}
           <div style={{ marginTop: '1.25rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border-color)' }}>
-            <button
-              onClick={onAnalyze}
-              disabled={isAnalyzing || !apiConfigured}
-              className="btn-primary"
-              style={{ width: '100%', padding: '0.85rem 1.5rem', fontSize: '1rem' }}
-            >
-              {isAnalyzing ? 'Analyzing Image...' : 'Analyze Image'}
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+              <button
+                onClick={onAnalyze}
+                disabled={isAnalyzing || !apiConfigured}
+                className="btn-primary"
+                style={{ flex: 1, padding: '0.85rem 1.5rem', fontSize: '1rem', minWidth: '180px' }}
+              >
+                {isAnalyzing ? 'Analyzing Image...' : 'Analyze Image'}
+              </button>
+
+              {/* Live Timer Display while analyzing */}
+              {analysisTimer && analysisTimer.status === 'running' && (
+                <div
+                  id="analysis-live-timer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.55rem',
+                    padding: '0.55rem 0.95rem',
+                    borderRadius: 'var(--radius-md)',
+                    background: 'rgba(99, 102, 241, 0.12)',
+                    border: '1px solid var(--primary)',
+                    color: 'var(--primary-text)',
+                    fontSize: '0.9rem',
+                    fontWeight: 600,
+                    fontFamily: 'var(--font-mono)',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  <span style={{
+                    display: 'inline-block',
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    backgroundColor: 'var(--primary)',
+                    boxShadow: '0 0 8px var(--primary)'
+                  }} />
+                  <span>{analysisTimer.elapsedSeconds}s</span>
+                </div>
+              )}
+
+              {/* Final Analysis Time display on completion */}
+              {analysisTimer && analysisTimer.status === 'completed' && (
+                <div
+                  id="analysis-final-timer"
+                  style={{
+                    fontSize: '0.875rem',
+                    color: 'var(--success-text)',
+                    fontWeight: 600,
+                    fontFamily: 'var(--font-mono)',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  Analysis completed in {analysisTimer.finalDuration}s
+                </div>
+              )}
+
+              {/* Error duration display on failure */}
+              {analysisTimer && analysisTimer.status === 'failed' && (
+                <div
+                  id="analysis-failed-timer"
+                  style={{
+                    fontSize: '0.875rem',
+                    color: 'var(--danger-text)',
+                    fontWeight: 600,
+                    fontFamily: 'var(--font-mono)',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  Analysis failed after {analysisTimer.finalDuration}s
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

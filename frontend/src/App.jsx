@@ -52,14 +52,86 @@ function App() {
   // Global Error Alert
   const [globalError, setGlobalError] = useState(null);
 
+  // High-Resolution Live Analysis Timer State
+  const [analysisTimer, setAnalysisTimer] = useState({
+    elapsedSeconds: '0.0',
+    status: 'idle', // 'idle' | 'running' | 'completed' | 'failed'
+    finalDuration: null
+  });
+  const analysisStartTimeRef = useRef(null);
+  const timerIntervalRef = useRef(null);
+
   // Request ID Ref to prevent race conditions & stale response overwrites
   const activeRequestId = useRef(0);
+
+  const startAnalysisTimer = () => {
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
+    const t0 = performance.now();
+    analysisStartTimeRef.current = t0;
+    setAnalysisTimer({
+      elapsedSeconds: '0.0',
+      status: 'running',
+      finalDuration: null
+    });
+
+    timerIntervalRef.current = setInterval(() => {
+      if (analysisStartTimeRef.current) {
+        const elapsed = (performance.now() - analysisStartTimeRef.current) / 1000;
+        setAnalysisTimer({
+          elapsedSeconds: elapsed.toFixed(1),
+          status: 'running',
+          finalDuration: null
+        });
+      }
+    }, 50);
+  };
+
+  const stopAnalysisTimer = (statusMode = 'completed') => {
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
+    const endTime = performance.now();
+    const startTime = analysisStartTimeRef.current || endTime;
+    const duration = ((endTime - startTime) / 1000).toFixed(1);
+
+    setAnalysisTimer({
+      elapsedSeconds: duration,
+      status: statusMode,
+      finalDuration: duration
+    });
+  };
+
+  const resetAnalysisTimer = () => {
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
+    analysisStartTimeRef.current = null;
+    setAnalysisTimer({
+      elapsedSeconds: '0.0',
+      status: 'idle',
+      finalDuration: null
+    });
+  };
 
   // Synchronize theme attribute on HTML root element
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('sightai_theme', theme);
   }, [theme]);
+
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+      }
+    };
+  }, []);
 
   const toggleTheme = () => {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
@@ -141,6 +213,7 @@ function App() {
   // Handle Image File Selection
   const handleFileSelect = (file) => {
     activeRequestId.current = Date.now();
+    resetAnalysisTimer();
     setSelectedFile(file);
     setAnalysisResult(null);
     setSafetyResult(null);
@@ -185,6 +258,7 @@ function App() {
   // Remove Selected Image & clear session storage
   const handleRemoveImage = () => {
     activeRequestId.current = Date.now();
+    resetAnalysisTimer();
     setSelectedFile(null);
     setImagePreview(null);
     setImageDimensions(null);
@@ -210,6 +284,7 @@ function App() {
     activeRequestId.current = reqId;
 
     setIsAnalyzing(true);
+    startAnalysisTimer();
     setGlobalError(null);
     setSafetyResult(null);
 
@@ -247,7 +322,9 @@ function App() {
       if (res && res.success) {
         setAnalysisResult(res.data);
         setSafetyResult(res.safety || { is_safe: true, category: 'SAFE' });
+        stopAnalysisTimer('completed');
       } else if (res) {
+        stopAnalysisTimer('failed');
         if (res.safety && !res.safety.is_safe && res.safety.category !== 'UNKNOWN') {
           setSafetyResult(res.safety);
         } else {
@@ -257,6 +334,7 @@ function App() {
     } catch (err) {
       if (activeRequestId.current !== reqId) return;
 
+      stopAnalysisTimer('failed');
       console.error('Analysis error:', err);
       let errMsg = err.response?.data?.detail || err.response?.data?.error || err.message || 'Analysis failed.';
       
@@ -446,6 +524,7 @@ function App() {
           onAnalyze={handleAnalyze}
           isAnalyzing={isAnalyzing}
           apiConfigured={apiConfigured}
+          analysisTimer={analysisTimer}
         />
 
         {/* Multi-Step Analysis Progress */}
