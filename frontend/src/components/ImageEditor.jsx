@@ -8,7 +8,8 @@ const ImageEditor = ({
   isEditing,
   editSafetyResult,
   analysisData,
-  apiConfigured
+  apiConfigured,
+  editTimer
 }) => {
   const [instruction, setInstruction] = useState('');
   const [ambiguityWarning, setAmbiguityWarning] = useState(null);
@@ -176,15 +177,80 @@ const ImageEditor = ({
           </div>
         )}
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={isEditing || !instruction.trim() || !apiConfigured}
-          className="btn-primary"
-          style={{ width: '100%', padding: '0.75rem 1.5rem', fontSize: '0.95rem' }}
-        >
-          {isEditing ? 'Generating Edit & Screening Safety...' : 'Generate Edit'}
-        </button>
+        {/* Submit Button & Live Edit Timer */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+          <button
+            type="submit"
+            disabled={isEditing || !instruction.trim() || !apiConfigured}
+            className="btn-primary"
+            style={{ flex: 1, padding: '0.75rem 1.5rem', fontSize: '0.95rem', minWidth: '180px' }}
+          >
+            {isEditing ? 'Generating Edit & Screening Safety...' : 'Generate Edit'}
+          </button>
+
+          {/* Live Edit Timer Display */}
+          {editTimer && editTimer.status === 'running' && (
+            <div
+              id="edit-live-timer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.55rem',
+                padding: '0.55rem 0.95rem',
+                borderRadius: 'var(--radius-md)',
+                background: 'rgba(99, 102, 241, 0.12)',
+                border: '1px solid var(--primary)',
+                color: 'var(--primary-text)',
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                fontFamily: 'var(--font-mono)',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              <span style={{
+                display: 'inline-block',
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                backgroundColor: 'var(--primary)',
+                boxShadow: '0 0 8px var(--primary)'
+              }} />
+              <span>{editTimer.elapsedSeconds}s</span>
+            </div>
+          )}
+
+          {/* Final Edit Completion Timer Display */}
+          {editTimer && editTimer.status === 'completed' && (
+            <div
+              id="edit-final-timer"
+              style={{
+                fontSize: '0.875rem',
+                color: 'var(--success-text)',
+                fontWeight: 600,
+                fontFamily: 'var(--font-mono)',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              Edit generated in {editTimer.finalDuration}s
+            </div>
+          )}
+
+          {/* Edit Failure Duration Display */}
+          {editTimer && editTimer.status === 'failed' && (
+            <div
+              id="edit-failed-timer"
+              style={{
+                fontSize: '0.875rem',
+                color: 'var(--danger-text)',
+                fontWeight: 600,
+                fontFamily: 'var(--font-mono)',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              Edit failed after {editTimer.finalDuration}s
+            </div>
+          )}
+        </div>
       </form>
     </div>
   );

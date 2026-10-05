@@ -59,15 +59,33 @@ function App() {
     finalDuration: null
   });
   const analysisStartTimeRef = useRef(null);
-  const timerIntervalRef = useRef(null);
+  const analysisTimerIntervalRef = useRef(null);
+
+  // High-Resolution Live Image Edit Timer State
+  const [editTimer, setEditTimer] = useState({
+    elapsedSeconds: '0.0',
+    status: 'idle',
+    finalDuration: null
+  });
+  const editStartTimeRef = useRef(null);
+  const editTimerIntervalRef = useRef(null);
+
+  // High-Resolution Live Ask AI Agent Timer State
+  const [askTimer, setAskTimer] = useState({
+    elapsedSeconds: '0.0',
+    status: 'idle',
+    finalDuration: null
+  });
+  const askStartTimeRef = useRef(null);
+  const askTimerIntervalRef = useRef(null);
 
   // Request ID Ref to prevent race conditions & stale response overwrites
   const activeRequestId = useRef(0);
 
   const startAnalysisTimer = () => {
-    if (timerIntervalRef.current) {
-      clearInterval(timerIntervalRef.current);
-      timerIntervalRef.current = null;
+    if (analysisTimerIntervalRef.current) {
+      clearInterval(analysisTimerIntervalRef.current);
+      analysisTimerIntervalRef.current = null;
     }
     const t0 = performance.now();
     analysisStartTimeRef.current = t0;
@@ -77,7 +95,7 @@ function App() {
       finalDuration: null
     });
 
-    timerIntervalRef.current = setInterval(() => {
+    analysisTimerIntervalRef.current = setInterval(() => {
       if (analysisStartTimeRef.current) {
         const elapsed = (performance.now() - analysisStartTimeRef.current) / 1000;
         setAnalysisTimer({
@@ -90,9 +108,9 @@ function App() {
   };
 
   const stopAnalysisTimer = (statusMode = 'completed') => {
-    if (timerIntervalRef.current) {
-      clearInterval(timerIntervalRef.current);
-      timerIntervalRef.current = null;
+    if (analysisTimerIntervalRef.current) {
+      clearInterval(analysisTimerIntervalRef.current);
+      analysisTimerIntervalRef.current = null;
     }
     const endTime = performance.now();
     const startTime = analysisStartTimeRef.current || endTime;
@@ -106,12 +124,120 @@ function App() {
   };
 
   const resetAnalysisTimer = () => {
-    if (timerIntervalRef.current) {
-      clearInterval(timerIntervalRef.current);
-      timerIntervalRef.current = null;
+    if (analysisTimerIntervalRef.current) {
+      clearInterval(analysisTimerIntervalRef.current);
+      analysisTimerIntervalRef.current = null;
     }
     analysisStartTimeRef.current = null;
     setAnalysisTimer({
+      elapsedSeconds: '0.0',
+      status: 'idle',
+      finalDuration: null
+    });
+  };
+
+  const startEditTimer = () => {
+    if (editTimerIntervalRef.current) {
+      clearInterval(editTimerIntervalRef.current);
+      editTimerIntervalRef.current = null;
+    }
+    const t0 = performance.now();
+    editStartTimeRef.current = t0;
+    setEditTimer({
+      elapsedSeconds: '0.0',
+      status: 'running',
+      finalDuration: null
+    });
+
+    editTimerIntervalRef.current = setInterval(() => {
+      if (editStartTimeRef.current) {
+        const elapsed = (performance.now() - editStartTimeRef.current) / 1000;
+        setEditTimer({
+          elapsedSeconds: elapsed.toFixed(1),
+          status: 'running',
+          finalDuration: null
+        });
+      }
+    }, 50);
+  };
+
+  const stopEditTimer = (statusMode = 'completed') => {
+    if (editTimerIntervalRef.current) {
+      clearInterval(editTimerIntervalRef.current);
+      editTimerIntervalRef.current = null;
+    }
+    const endTime = performance.now();
+    const startTime = editStartTimeRef.current || endTime;
+    const duration = ((endTime - startTime) / 1000).toFixed(1);
+
+    setEditTimer({
+      elapsedSeconds: duration,
+      status: statusMode,
+      finalDuration: duration
+    });
+  };
+
+  const resetEditTimer = () => {
+    if (editTimerIntervalRef.current) {
+      clearInterval(editTimerIntervalRef.current);
+      editTimerIntervalRef.current = null;
+    }
+    editStartTimeRef.current = null;
+    setEditTimer({
+      elapsedSeconds: '0.0',
+      status: 'idle',
+      finalDuration: null
+    });
+  };
+
+  const startAskTimer = () => {
+    if (askTimerIntervalRef.current) {
+      clearInterval(askTimerIntervalRef.current);
+      askTimerIntervalRef.current = null;
+    }
+    const t0 = performance.now();
+    askStartTimeRef.current = t0;
+    setAskTimer({
+      elapsedSeconds: '0.0',
+      status: 'running',
+      finalDuration: null
+    });
+
+    askTimerIntervalRef.current = setInterval(() => {
+      if (askStartTimeRef.current) {
+        const elapsed = (performance.now() - askStartTimeRef.current) / 1000;
+        setAskTimer({
+          elapsedSeconds: elapsed.toFixed(1),
+          status: 'running',
+          finalDuration: null
+        });
+      }
+    }, 50);
+  };
+
+  const stopAskTimer = (statusMode = 'completed') => {
+    if (askTimerIntervalRef.current) {
+      clearInterval(askTimerIntervalRef.current);
+      askTimerIntervalRef.current = null;
+    }
+    const endTime = performance.now();
+    const startTime = askStartTimeRef.current || endTime;
+    const duration = ((endTime - startTime) / 1000).toFixed(1);
+
+    setAskTimer({
+      elapsedSeconds: duration,
+      status: statusMode,
+      finalDuration: duration
+    });
+  };
+
+  const resetAskTimer = () => {
+    if (askTimerIntervalRef.current) {
+      clearInterval(askTimerIntervalRef.current);
+      askTimerIntervalRef.current = null;
+    }
+    askStartTimeRef.current = null;
+    setAskTimer({
       elapsedSeconds: '0.0',
       status: 'idle',
       finalDuration: null
@@ -124,12 +250,12 @@ function App() {
     localStorage.setItem('sightai_theme', theme);
   }, [theme]);
 
-  // Clean up timer on unmount
+  // Clean up timers on unmount
   useEffect(() => {
     return () => {
-      if (timerIntervalRef.current) {
-        clearInterval(timerIntervalRef.current);
-      }
+      if (analysisTimerIntervalRef.current) clearInterval(analysisTimerIntervalRef.current);
+      if (editTimerIntervalRef.current) clearInterval(editTimerIntervalRef.current);
+      if (askTimerIntervalRef.current) clearInterval(askTimerIntervalRef.current);
     };
   }, []);
 
@@ -174,6 +300,8 @@ function App() {
   const handleFileSelect = (file) => {
     activeRequestId.current = Date.now();
     resetAnalysisTimer();
+    resetEditTimer();
+    resetAskTimer();
     setSelectedFile(file);
     setAnalysisResult(null);
     setSafetyResult(null);
@@ -219,6 +347,8 @@ function App() {
   const handleRemoveImage = () => {
     activeRequestId.current = Date.now();
     resetAnalysisTimer();
+    resetEditTimer();
+    resetAskTimer();
     setSelectedFile(null);
     setImagePreview(null);
     setImageDimensions(null);
@@ -321,6 +451,7 @@ function App() {
     if (!baseVerObj) return;
 
     setIsEditing(true);
+    startEditTimer();
     setEditSafetyResult(null);
     setGlobalError(null);
 
@@ -333,6 +464,7 @@ function App() {
       });
 
       if (res.success && res.is_safe && res.image_base64) {
+        stopEditTimer('completed');
         // Safe generated edit -> Create next version record with backend server timestamp
         const nextVerNum = Math.max(...versionHistory.map(v => v.version_number), 0) + 1;
         const ts = getFormattedTimestamp();
@@ -353,9 +485,11 @@ function App() {
         setSourceVersionNum(nextVerNum);
         setActiveTab('history');
       } else {
+        stopEditTimer('failed');
         setEditSafetyResult(res.safety || { is_safe: false, error: res.error || 'Generated edit was rejected by safety gate.' });
       }
     } catch (err) {
+      stopEditTimer('failed');
       console.error('Edit error:', err);
       const errMsg = err.response?.data?.detail || err.response?.data?.error || err.message || 'Image edit failed.';
       if (err.response?.data?.safety) {
@@ -374,6 +508,7 @@ function App() {
   // Trigger Grounded Gemini Ask AI Agent Q&A
   const handleAskQuestion = async (questionText) => {
     setIsAsking(true);
+    startAskTimer();
     setGlobalError(null);
 
     try {
@@ -387,6 +522,7 @@ function App() {
       });
 
       if (res.success) {
+        stopAskTimer('completed');
         setQaHistory(prev => [
           ...prev,
           {
@@ -401,9 +537,11 @@ function App() {
           }
         ]);
       } else {
+        stopAskTimer('failed');
         setGlobalError(`Ask AI Agent Error: ${res.error || 'Failed to generate response.'}`);
       }
     } catch (err) {
+      stopAskTimer('failed');
       console.error('Q&A error:', err);
       const errMsg = err.response?.data?.detail || err.message || 'Unable to process question.';
       setGlobalError(`Ask AI Error: ${errMsg}`);
@@ -507,6 +645,7 @@ function App() {
                   <AnalysisWorkspace
                     analysisResult={analysisResult}
                     imagePreview={imagePreview}
+                    analysisTimer={analysisTimer}
                   />
                 )}
               </div>
@@ -524,6 +663,7 @@ function App() {
                   editSafetyResult={editSafetyResult}
                   analysisData={analysisResult}
                   apiConfigured={apiConfigured}
+                  editTimer={editTimer}
                 />
 
                 {/* Comparison View */}
@@ -543,6 +683,7 @@ function App() {
                 onAskQuestion={handleAskQuestion}
                 isAsking={isAsking}
                 apiConfigured={apiConfigured}
+                askTimer={askTimer}
               />
             )}
 

@@ -6,7 +6,7 @@ import SceneCard from './SceneCard';
 import ObjectInstanceCard from './ObjectInstanceCard';
 import StatsCards from './StatsCards';
 
-const AnalysisWorkspace = ({ analysisResult, imagePreview }) => {
+const AnalysisWorkspace = ({ analysisResult, imagePreview, analysisTimer }) => {
   // Requirement 6 & 7: Object Detection HIDDEN BY DEFAULT
   const [showObjectDetection, setShowObjectDetection] = useState(false);
   
@@ -34,7 +34,7 @@ const AnalysisWorkspace = ({ analysisResult, imagePreview }) => {
   return (
     <div>
       {/* Top Level Quick Metrics */}
-      <StatsCards analysisData={analysisResult} />
+      <StatsCards analysisData={analysisResult} analysisTimer={analysisTimer} />
 
       {/* Main Analysis Layout */}
       <div className="grid-2" style={{ marginBottom: '1.5rem', alignItems: 'stretch' }}>

@@ -6,7 +6,8 @@ const AskAI = ({
   qaHistory = [],
   onAskQuestion,
   isAsking,
-  apiConfigured
+  apiConfigured,
+  askTimer
 }) => {
   const [question, setQuestion] = useState('');
 
@@ -43,7 +44,7 @@ const AskAI = ({
 
       {/* Input Form */}
       <form onSubmit={handleSubmit} style={{ marginBottom: '1.25rem' }}>
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
           <input
             type="text"
             value={question}
@@ -61,6 +62,69 @@ const AskAI = ({
           >
             {isAsking ? 'Agent Thinking...' : 'Ask Agent'}
           </button>
+
+          {/* Live Ask AI Agent Timer Display */}
+          {askTimer && askTimer.status === 'running' && (
+            <div
+              id="ask-live-timer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.55rem',
+                padding: '0.55rem 0.95rem',
+                borderRadius: 'var(--radius-md)',
+                background: 'rgba(99, 102, 241, 0.12)',
+                border: '1px solid var(--primary)',
+                color: 'var(--primary-text)',
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                fontFamily: 'var(--font-mono)',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              <span style={{
+                display: 'inline-block',
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                backgroundColor: 'var(--primary)',
+                boxShadow: '0 0 8px var(--primary)'
+              }} />
+              <span>{askTimer.elapsedSeconds}s</span>
+            </div>
+          )}
+
+          {/* Final Agent Completion Timer Display */}
+          {askTimer && askTimer.status === 'completed' && (
+            <div
+              id="ask-final-timer"
+              style={{
+                fontSize: '0.875rem',
+                color: 'var(--success-text)',
+                fontWeight: 600,
+                fontFamily: 'var(--font-mono)',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              Research completed in {askTimer.finalDuration}s
+            </div>
+          )}
+
+          {/* Agent Failure Duration Display */}
+          {askTimer && askTimer.status === 'failed' && (
+            <div
+              id="ask-failed-timer"
+              style={{
+                fontSize: '0.875rem',
+                color: 'var(--danger-text)',
+                fontWeight: 600,
+                fontFamily: 'var(--font-mono)',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              Query failed after {askTimer.finalDuration}s
+            </div>
+          )}
         </div>
       </form>
 
