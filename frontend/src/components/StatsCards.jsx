@@ -22,7 +22,12 @@ const StatsCards = ({ analysisData, analysisTimer }) => {
 
   const stats = [
     { label: 'Objects Verified', value: totalObjectsCount },
-    { label: 'Spatial Bounding Boxes', value: localizedCount },
+    { 
+      label: 'Spatial Bounding Boxes', 
+      value: (totalObjectsCount > 0 && localizedCount !== totalObjectsCount)
+        ? `${localizedCount} of ${totalObjectsCount} localized`
+        : localizedCount
+    },
     { label: 'People Count', value: totalPeopleCount },
     { label: 'Analysis Time', value: durationStr },
   ];
@@ -47,7 +52,7 @@ const StatsCards = ({ analysisData, analysisTimer }) => {
             {stat.label}
           </span>
           <span style={{
-            fontSize: '1.35rem',
+            fontSize: (typeof stat.value === 'string' && stat.value.includes('localized')) ? '1.05rem' : '1.35rem',
             fontWeight: 800,
             color: 'var(--heading)',
             letterSpacing: '-0.02em',
