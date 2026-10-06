@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { imageCoordinatesToDisplayCoordinates } from '../utils/coordinateTransform';
+import {
+  imageCoordinatesToDisplayCoordinates,
+  calculateImageRenderMetrics,
+  normalizeBoundingBox
+} from '../utils/coordinateTransform';
 
 /**
  * Color palette for object categories/instances
@@ -20,6 +24,7 @@ const getCategoryColor = (catIndex) => {
 const ObjectDetectionViewer = ({
   imageSrc,
   categories = [],
+  imageMetadata = null,
   showObjectDetection = false,
   selectedCategory = null,
   selectedInstance = null,
@@ -30,6 +35,10 @@ const ObjectDetectionViewer = ({
   const containerRef = useRef(null);
   const imgRef = useRef(null);
 
+  const [isDebugMode, setIsDebugMode] = useState(() => {
+    return typeof window !== 'undefined' && !!window.__SIGHTAI_DEBUG_BBOX;
+  });
+
   const [renderBounds, setRenderBounds] = useState({
     containerWidth: 0,
     containerHeight: 0,
@@ -39,6 +48,8 @@ const ObjectDetectionViewer = ({
     displayedHeight: 0,
     offsetLeft: 0,
     offsetTop: 0,
+    scaleX: 1,
+    scaleY: 1,
     isLoaded: false
   });
 
@@ -47,48 +58,34 @@ const ObjectDetectionViewer = ({
     const img = imgRef.current;
     const container = containerRef.current;
 
-    if (!img || !container) {
-      return;
-    }
+    if (!img || !container) return;
 
-    if (!img.naturalWidth || !img.naturalHeight) {
-      return;
-    }
+    if (!img.naturalWidth || !img.naturalHeight) return;
 
     const containerWidth = container.clientWidth;
     const containerHeight = container.clientHeight;
 
     if (containerWidth <= 0 || containerHeight <= 0) return;
 
-    const imgRatio = img.naturalWidth / img.naturalHeight;
-    const containerRatio = containerWidth / containerHeight;
-
-    let displayedWidth = 0;
-    let displayedHeight = 0;
-    let offsetLeft = 0;
-    let offsetTop = 0;
-
-    if (imgRatio > containerRatio) {
-      displayedWidth = containerWidth;
-      displayedHeight = containerWidth / imgRatio;
-      offsetLeft = 0;
-      offsetTop = (containerHeight - displayedHeight) / 2;
-    } else {
-      displayedHeight = containerHeight;
-      displayedWidth = containerHeight * imgRatio;
-      offsetLeft = (containerWidth - displayedWidth) / 2;
-      offsetTop = 0;
-    }
+    const metrics = calculateImageRenderMetrics({
+      containerWidth,
+      containerHeight,
+      naturalWidth: img.naturalWidth,
+      naturalHeight: img.naturalHeight,
+      objectFit: 'contain'
+    });
 
     setRenderBounds({
       containerWidth,
       containerHeight,
       naturalWidth: img.naturalWidth,
       naturalHeight: img.naturalHeight,
-      displayedWidth,
-      displayedHeight,
-      offsetLeft,
-      offsetTop,
+      displayedWidth: metrics.displayedWidth,
+      displayedHeight: metrics.displayedHeight,
+      offsetLeft: metrics.offsetX,
+      offsetTop: metrics.offsetY,
+      scaleX: metrics.scaleX,
+      scaleY: metrics.scaleY,
       isLoaded: true
     });
   };
@@ -128,6 +125,13 @@ const ObjectDetectionViewer = ({
     };
   }, [imageSrc]);
 
+  // Sync window global debug mode
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.__SIGHTAI_DEBUG_BBOX = isDebugMode;
+    }
+  }, [isDebugMode]);
+
   // Extract all instances with bounding boxes
   const allInstancesWithBoxes = [];
   categories.forEach((cat, catIdx) => {
@@ -144,8 +148,40 @@ const ObjectDetectionViewer = ({
     });
   });
 
+  // Find active or hovered instance for debug readout
+  const activeOrHoveredBox = allInstancesWithBoxes.find(
+    item => item.instance.id === hoveredInstance || item.instance.id === selectedInstance
+  ) || allInstancesWithBoxes[0];
+
   return (
-    <div className="card-glass" style={{ padding: '1.25rem', height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div className="card-glass" style={{ padding: '1.25rem', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      {/* Header bar with Debug Mode toggle */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+          Image Subject & Bounding Overlay
+        </span>
+        <button
+          type="button"
+          onClick={() => setIsDebugMode(!isDebugMode)}
+          style={{
+            background: isDebugMode ? 'rgba(99, 102, 241, 0.2)' : 'transparent',
+            border: `1px solid ${isDebugMode ? '#6366F1' : 'var(--border-color)'}`,
+            color: isDebugMode ? '#818CF8' : 'var(--text-muted)',
+            borderRadius: '4px',
+            padding: '2px 8px',
+            fontSize: '0.72rem',
+            fontWeight: 600,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px'
+          }}
+          title="Toggle Bounding Box Developer Coordinate Debug HUD"
+        >
+          <span>🐛</span> {isDebugMode ? 'Debug Mode ON' : 'Debug Mode'}
+        </button>
+      </div>
+
       {/* Main Image Container */}
       <div
         ref={containerRef}
@@ -200,7 +236,7 @@ const ObjectDetectionViewer = ({
 
               if (!transform) return null;
 
-              // Position relative to rendered image overlay (which is already offset by renderBounds.offsetLeft/offsetTop)
+              // Position relative to rendered image overlay
               const relLeft = transform.normX1 * renderBounds.displayedWidth;
               const relTop = transform.normY1 * renderBounds.displayedHeight;
               const width = (transform.normX2 - transform.normX1) * renderBounds.displayedWidth;
@@ -339,10 +375,86 @@ const ObjectDetectionViewer = ({
             })}
           </div>
         )}
+
+        {/* Developer Debug HUD Overlay */}
+        {isDebugMode && (
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '10px',
+              left: '10px',
+              right: '10px',
+              background: 'rgba(7, 10, 17, 0.92)',
+              border: '1px solid #6366F1',
+              borderRadius: '6px',
+              padding: '8px 12px',
+              color: '#38BDF8',
+              fontFamily: 'monospace',
+              fontSize: '0.72rem',
+              pointerEvents: 'none',
+              zIndex: 100,
+              boxShadow: '0 4px 16px rgba(0,0,0,0.6)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '4px'
+            }}
+          >
+            <div style={{ fontWeight: 700, color: '#A5B4FC', borderBottom: '1px solid #312E81', paddingBottom: '3px' }}>
+              📐 SIGHTAI BOUNDING BOX DEBUG HUD
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '8px' }}>
+              <div>
+                <span style={{ color: '#94A3B8' }}>Source Image:</span> {renderBounds.naturalWidth} × {renderBounds.naturalHeight} px
+              </div>
+              <div>
+                <span style={{ color: '#94A3B8' }}>Container:</span> {renderBounds.containerWidth} × {renderBounds.containerHeight} px
+              </div>
+              <div>
+                <span style={{ color: '#94A3B8' }}>Rendered Image:</span> {renderBounds.displayedWidth.toFixed(1)} × {renderBounds.displayedHeight.toFixed(1)} px
+              </div>
+              <div>
+                <span style={{ color: '#94A3B8' }}>Scale Factor:</span> {renderBounds.scaleX.toFixed(4)}
+              </div>
+              <div>
+                <span style={{ color: '#94A3B8' }}>Offset (X,Y):</span> ({renderBounds.offsetLeft.toFixed(1)}, {renderBounds.offsetTop.toFixed(1)}) px
+              </div>
+              {imageMetadata && (
+                <div>
+                  <span style={{ color: '#94A3B8' }}>VLM Preprocessed:</span> {imageMetadata.analysis_width} × {imageMetadata.analysis_height} px
+                </div>
+              )}
+            </div>
+
+            {activeOrHoveredBox && (
+              <div style={{ marginTop: '4px', paddingTop: '4px', borderTop: '1px dashed #334155', color: '#F1F5F9' }}>
+                <span style={{ color: '#F59E0B', fontWeight: 700 }}>Target [{activeOrHoveredBox.instance.id}]: </span>
+                <span>Raw: [{activeOrHoveredBox.instance.bounding_box?.x_min}, {activeOrHoveredBox.instance.bounding_box?.y_min}, {activeOrHoveredBox.instance.bounding_box?.x_max}, {activeOrHoveredBox.instance.bounding_box?.y_max}] </span>
+                {(() => {
+                  const norm = normalizeBoundingBox(activeOrHoveredBox.instance.bounding_box);
+                  if (!norm) return null;
+                  const transform = imageCoordinatesToDisplayCoordinates({
+                    bbox: activeOrHoveredBox.instance.bounding_box,
+                    containerWidth: renderBounds.containerWidth,
+                    containerHeight: renderBounds.containerHeight,
+                    naturalWidth: renderBounds.naturalWidth,
+                    naturalHeight: renderBounds.naturalHeight,
+                    objectFit: 'contain'
+                  });
+                  return (
+                    <span>
+                      | Norm: [{norm.x1.toFixed(3)}, {norm.y1.toFixed(3)}, {norm.x2.toFixed(3)}, {norm.y2.toFixed(3)}]
+                      {transform && transform.sourcePixels && ` | SourcePx: [${transform.sourcePixels.x1}, ${transform.sourcePixels.y1}] -> [${transform.sourcePixels.x2}, ${transform.sourcePixels.y2}]`}
+                      {transform && ` | RenderPx: left=${transform.left.toFixed(1)}, top=${transform.top.toFixed(1)}, w=${transform.width.toFixed(1)}, h=${transform.height.toFixed(1)}`}
+                    </span>
+                  );
+                })()}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default ObjectDetectionViewer;
-

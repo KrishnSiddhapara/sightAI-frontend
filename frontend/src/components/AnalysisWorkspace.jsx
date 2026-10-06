@@ -43,6 +43,7 @@ const AnalysisWorkspace = ({ analysisResult, imagePreview, analysisTimer }) => {
           <ObjectDetectionViewer
             imageSrc={imagePreview}
             categories={analysisResult.objects || []}
+            imageMetadata={analysisResult.image_metadata}
             showObjectDetection={showObjectDetection}
             selectedCategory={selectedCategory}
             selectedInstance={selectedInstance}
