@@ -67,25 +67,48 @@ const ObjectDetectionViewer = ({
 
     if (containerWidth <= 0 || containerHeight <= 0) return;
 
-    const metrics = calculateImageRenderMetrics({
-      containerWidth,
-      containerHeight,
-      naturalWidth: img.naturalWidth,
-      naturalHeight: img.naturalHeight,
-      objectFit: 'contain'
-    });
+    const imgRect = img.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+
+    let displayedWidth = 0;
+    let displayedHeight = 0;
+    let offsetLeft = 0;
+    let offsetTop = 0;
+
+    if (imgRect.width > 0 && imgRect.height > 0) {
+      // Direct DOM measurements: exact to the subpixel including flexbox centering and borders
+      displayedWidth = imgRect.width;
+      displayedHeight = imgRect.height;
+      const borderLeft = container.clientLeft || 0;
+      const borderTop = container.clientTop || 0;
+      offsetLeft = imgRect.left - containerRect.left - borderLeft;
+      offsetTop = imgRect.top - containerRect.top - borderTop;
+    } else {
+      // Fallback to geometric calculation if DOM rects are not yet laid out
+      const metrics = calculateImageRenderMetrics({
+        containerWidth,
+        containerHeight,
+        naturalWidth: img.naturalWidth,
+        naturalHeight: img.naturalHeight,
+        objectFit: 'contain'
+      });
+      displayedWidth = metrics.displayedWidth;
+      displayedHeight = metrics.displayedHeight;
+      offsetLeft = metrics.offsetX;
+      offsetTop = metrics.offsetY;
+    }
 
     setRenderBounds({
       containerWidth,
       containerHeight,
       naturalWidth: img.naturalWidth,
       naturalHeight: img.naturalHeight,
-      displayedWidth: metrics.displayedWidth,
-      displayedHeight: metrics.displayedHeight,
-      offsetLeft: metrics.offsetX,
-      offsetTop: metrics.offsetY,
-      scaleX: metrics.scaleX,
-      scaleY: metrics.scaleY,
+      displayedWidth,
+      displayedHeight,
+      offsetLeft,
+      offsetTop,
+      scaleX: displayedWidth / img.naturalWidth,
+      scaleY: displayedHeight / img.naturalHeight,
       isLoaded: true
     });
   };
@@ -213,168 +236,250 @@ const ObjectDetectionViewer = ({
         />
 
         {/* Bounding Box Overlay Layer - Rendered ONLY when showObjectDetection is ON */}
-        {showObjectDetection && renderBounds.isLoaded && (
-          <div
-            style={{
-              position: 'absolute',
-              left: `${renderBounds.offsetLeft}px`,
-              top: `${renderBounds.offsetTop}px`,
-              width: `${renderBounds.displayedWidth}px`,
-              height: `${renderBounds.displayedHeight}px`,
-              pointerEvents: 'none'
-            }}
-          >
-            {allInstancesWithBoxes.map(({ categoryName, instance, color }) => {
-              const transform = imageCoordinatesToDisplayCoordinates({
-                bbox: instance.bounding_box,
-                containerWidth: renderBounds.containerWidth,
-                containerHeight: renderBounds.containerHeight,
-                naturalWidth: renderBounds.naturalWidth,
-                naturalHeight: renderBounds.naturalHeight,
-                objectFit: 'contain'
+        {showObjectDetection && renderBounds.isLoaded && (() => {
+          // Pre-compute items and anti-collision badge placements
+          const renderedItems = [];
+          const placedBadgeRects = [];
+
+          allInstancesWithBoxes.forEach((item) => {
+            const { categoryName, instance, color } = item;
+            const transform = imageCoordinatesToDisplayCoordinates({
+              bbox: instance.bounding_box,
+              containerWidth: renderBounds.containerWidth,
+              containerHeight: renderBounds.containerHeight,
+              naturalWidth: renderBounds.naturalWidth,
+              naturalHeight: renderBounds.naturalHeight,
+              objectFit: 'contain'
+            });
+
+            if (!transform) return;
+
+            const relLeft = transform.normX1 * renderBounds.displayedWidth;
+            const relTop = transform.normY1 * renderBounds.displayedHeight;
+            const width = (transform.normX2 - transform.normX1) * renderBounds.displayedWidth;
+            const height = (transform.normY2 - transform.normY1) * renderBounds.displayedHeight;
+
+            const displayLabel = instance.id ? instance.id.replace('_', ' ') : (categoryName || 'object');
+            const badgeW = Math.min(180, Math.max(64, displayLabel.length * 7.5 + 24));
+            const badgeH = 22;
+
+            // Candidate badge positions
+            const candidates = [
+              // 1. Above box
+              {
+                absX: Math.max(0, Math.min(renderBounds.displayedWidth - badgeW, relLeft)),
+                absY: relTop - 25,
+                top: '-25px',
+                left: Math.max(0, relLeft < 0 ? -relLeft : 0) + 'px',
+                right: 'auto'
+              },
+              // 2. Inside top of box (if tall enough)
+              ...(height >= 36 ? [{
+                absX: Math.max(0, Math.min(renderBounds.displayedWidth - badgeW, relLeft + 4)),
+                absY: relTop + 4,
+                top: '4px',
+                left: '4px',
+                right: 'auto'
+              }] : []),
+              // 3. Below box
+              {
+                absX: Math.max(0, Math.min(renderBounds.displayedWidth - badgeW, relLeft)),
+                absY: relTop + height + 3,
+                top: `${Math.round(height + 3)}px`,
+                left: Math.max(0, relLeft < 0 ? -relLeft : 0) + 'px',
+                right: 'auto'
+              },
+              // 4. Inside bottom of box (if tall enough)
+              ...(height >= 50 ? [{
+                absX: Math.max(0, Math.min(renderBounds.displayedWidth - badgeW, relLeft + 4)),
+                absY: relTop + height - 26,
+                top: `${Math.round(height - 26)}px`,
+                left: '4px',
+                right: 'auto'
+              }] : [])
+            ];
+
+            // Filter candidates that stay inside vertical viewport bounds
+            const inBounds = candidates.filter(c => c.absY >= 0 && (c.absY + badgeH) <= renderBounds.displayedHeight);
+            const candidateList = inBounds.length > 0 ? inBounds : candidates;
+
+            // Select candidate with zero collision with already placed badges
+            let chosen = candidateList[0];
+            for (const cand of candidateList) {
+              const collides = placedBadgeRects.some(placed => {
+                return !(
+                  cand.absX + badgeW <= placed.x ||
+                  cand.absX >= placed.x + placed.w ||
+                  cand.absY + badgeH <= placed.y ||
+                  cand.absY >= placed.y + placed.h
+                );
               });
+              if (!collides) {
+                chosen = cand;
+                break;
+              }
+            }
 
-              if (!transform) return null;
+            placedBadgeRects.push({
+              x: chosen.absX,
+              y: chosen.absY,
+              w: badgeW,
+              h: badgeH
+            });
 
-              // Position relative to rendered image overlay
-              const relLeft = transform.normX1 * renderBounds.displayedWidth;
-              const relTop = transform.normY1 * renderBounds.displayedHeight;
-              const width = (transform.normX2 - transform.normX1) * renderBounds.displayedWidth;
-              const height = (transform.normY2 - transform.normY1) * renderBounds.displayedHeight;
+            renderedItems.push({
+              categoryName,
+              instance,
+              color,
+              relLeft,
+              relTop,
+              width,
+              height,
+              displayLabel,
+              badgeW,
+              badgeTop: chosen.top,
+              badgeLeft: chosen.left,
+              badgeRight: chosen.right
+            });
+          });
 
-              const isInstanceActive = selectedInstance === instance.id;
-              const isCategoryActive = selectedCategory?.toLowerCase() === categoryName.toLowerCase();
-              const isHovered = hoveredInstance === instance.id;
+          return (
+            <div
+              style={{
+                position: 'absolute',
+                left: `${renderBounds.offsetLeft}px`,
+                top: `${renderBounds.offsetTop}px`,
+                width: `${renderBounds.displayedWidth}px`,
+                height: `${renderBounds.displayedHeight}px`,
+                pointerEvents: 'none'
+              }}
+            >
+              {renderedItems.map(({
+                categoryName,
+                instance,
+                color,
+                relLeft,
+                relTop,
+                width,
+                height,
+                displayLabel,
+                badgeTop,
+                badgeLeft,
+                badgeRight
+              }) => {
+                const isInstanceActive = selectedInstance === instance.id;
+                const isCategoryActive = selectedCategory?.toLowerCase() === categoryName.toLowerCase();
+                const isHovered = hoveredInstance === instance.id;
 
-              const hasActiveSelection = selectedInstance !== null || selectedCategory !== null;
+                const hasActiveSelection = selectedInstance !== null || selectedCategory !== null;
 
-              let opacity = 1;
-              let borderWidth = '2px';
-              let zIndex = 10;
-              let bgTint = 'rgba(0, 0, 0, 0.05)';
-              let boxShadow = 'none';
+                let opacity = 1;
+                let borderWidth = '2px';
+                let zIndex = 10;
+                let bgTint = 'rgba(0, 0, 0, 0.05)';
+                let boxShadow = 'none';
 
-              if (hasActiveSelection) {
-                if (isInstanceActive) {
+                if (hasActiveSelection) {
+                  if (isInstanceActive) {
+                    opacity = 1;
+                    borderWidth = '3px';
+                    zIndex = 30;
+                    bgTint = color.bg;
+                    boxShadow = `0 0 16px ${color.border}`;
+                  } else if (isCategoryActive) {
+                    opacity = 1;
+                    borderWidth = '2px';
+                    zIndex = 20;
+                    bgTint = color.bg;
+                  } else {
+                    opacity = 0.2;
+                    borderWidth = '1px';
+                  }
+                }
+
+                if (isHovered) {
                   opacity = 1;
                   borderWidth = '3px';
-                  zIndex = 30;
-                  bgTint = color.bg;
-                  boxShadow = `0 0 16px ${color.border}`;
-                } else if (isCategoryActive) {
-                  opacity = 1;
-                  borderWidth = '2px';
-                  zIndex = 20;
-                  bgTint = color.bg;
-                } else {
-                  opacity = 0.2;
-                  borderWidth = '1px';
+                  zIndex = 40;
+                  boxShadow = `0 0 20px ${color.border}`;
                 }
-              }
 
-              if (isHovered) {
-                opacity = 1;
-                borderWidth = '3px';
-                zIndex = 40;
-                boxShadow = `0 0 20px ${color.border}`;
-              }
-
-              const displayLabel = instance.id ? instance.id.replace('_', ' ') : (categoryName || 'object');
-              const labelWidthEst = Math.min(180, Math.max(60, displayLabel.length * 7.5 + 20));
-
-              // Dynamic Boundary-Aware Positioning
-              const isNearTopEdge = relTop < 26;
-              const isNearRightEdge = (relLeft + labelWidthEst) > renderBounds.displayedWidth;
-
-              const labelStyle = {
-                position: 'absolute',
-                background: 'rgba(15, 23, 42, 0.94)',
-                color: '#F8FAFC',
-                border: `1px solid ${color.border}`,
-                boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
-                fontSize: '0.7rem',
-                fontWeight: 700,
-                padding: '2px 8px',
-                borderRadius: '4px',
-                whiteSpace: 'nowrap',
-                maxWidth: `${Math.min(180, Math.max(100, renderBounds.displayedWidth - 16))}px`,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                pointerEvents: 'none',
-                fontFamily: 'var(--font-mono)',
-                textTransform: 'uppercase',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                zIndex: 15
-              };
-
-              // Vertical placement logic
-              if (isNearTopEdge) {
-                if (height >= 30) {
-                  labelStyle.top = '4px';
-                } else {
-                  labelStyle.top = `${height + 4}px`;
-                }
-              } else {
-                labelStyle.top = '-24px';
-              }
-
-              // Horizontal placement logic
-              if (isNearRightEdge) {
-                labelStyle.left = 'auto';
-                labelStyle.right = '0px';
-              } else {
-                labelStyle.left = Math.max(0, relLeft < 0 ? -relLeft : -2) + 'px';
-              }
-
-              return (
-                <div
-                  key={instance.id}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (onSelectInstance) {
-                      onSelectInstance(instance.id, categoryName);
-                    }
-                  }}
-                  onMouseEnter={() => onHoverInstance && onHoverInstance(instance.id)}
-                  onMouseLeave={() => onHoverInstance && onHoverInstance(null)}
-                  style={{
-                    position: 'absolute',
-                    left: `${relLeft}px`,
-                    top: `${relTop}px`,
-                    width: `${width}px`,
-                    height: `${height}px`,
-                    border: `${borderWidth} solid ${color.border}`,
-                    backgroundColor: bgTint,
-                    boxShadow: boxShadow,
-                    opacity: opacity,
-                    zIndex: zIndex,
-                    pointerEvents: 'auto',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s ease',
-                    boxSizing: 'border-box'
-                  }}
-                >
-                  {/* Dynamic Boundary-Safe Instance Label */}
-                  <div style={labelStyle}>
-                    <span style={{
-                      display: 'inline-block',
-                      width: '6px',
-                      height: '6px',
-                      borderRadius: '50%',
-                      backgroundColor: color.border,
-                      flexShrink: 0
-                    }} />
-                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {displayLabel}
-                    </span>
+                return (
+                  <div
+                    key={instance.id}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (onSelectInstance) {
+                        onSelectInstance(instance.id, categoryName);
+                      }
+                    }}
+                    onMouseEnter={() => onHoverInstance && onHoverInstance(instance.id)}
+                    onMouseLeave={() => onHoverInstance && onHoverInstance(null)}
+                    style={{
+                      position: 'absolute',
+                      left: `${relLeft}px`,
+                      top: `${relTop}px`,
+                      width: `${width}px`,
+                      height: `${height}px`,
+                      border: `${borderWidth} solid ${color.border}`,
+                      backgroundColor: bgTint,
+                      boxShadow: boxShadow,
+                      opacity: opacity,
+                      zIndex: zIndex,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      boxSizing: 'border-box'
+                    }}
+                  >
+                    {/* Anti-Collision Boundary-Safe Instance Label */}
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: badgeTop,
+                        left: badgeLeft,
+                        right: badgeRight,
+                        background: 'rgba(15, 23, 42, 0.94)',
+                        color: '#F8FAFC',
+                        border: `1px solid ${color.border}`,
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+                        fontSize: '0.7rem',
+                        fontWeight: 700,
+                        padding: '2px 8px',
+                        borderRadius: '4px',
+                        whiteSpace: 'nowrap',
+                        maxWidth: `${Math.min(180, Math.max(100, renderBounds.displayedWidth - 16))}px`,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        pointerEvents: 'none',
+                        fontFamily: 'var(--font-mono)',
+                        textTransform: 'uppercase',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        zIndex: 15
+                      }}
+                    >
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          width: '6px',
+                          height: '6px',
+                          borderRadius: '50%',
+                          backgroundColor: color.border,
+                          flexShrink: 0
+                        }}
+                      />
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {displayLabel}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+                );
+              })}
+            </div>
+          );
+        })()}
 
         {/* Developer Debug HUD Overlay */}
         {isDebugMode && (
