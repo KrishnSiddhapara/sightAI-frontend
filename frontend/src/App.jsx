@@ -491,9 +491,25 @@ function App() {
     } catch (err) {
       stopEditTimer('failed');
       console.error('Edit error:', err);
+      const returnedSafety = err.response?.data?.safety;
       const errMsg = err.response?.data?.detail || err.response?.data?.error || err.message || 'Image edit failed.';
-      if (err.response?.data?.safety) {
-        setEditSafetyResult(err.response.data.safety);
+
+      if (returnedSafety) {
+        setEditSafetyResult(returnedSafety);
+      } else if (
+        errMsg.toLowerCase().includes('safety') ||
+        errMsg.toLowerCase().includes('violence') ||
+        errMsg.toLowerCase().includes('nudity') ||
+        errMsg.toLowerCase().includes('offensive') ||
+        errMsg.toLowerCase().includes('prohibited') ||
+        errMsg.toLowerCase().includes('guardrail')
+      ) {
+        setEditSafetyResult({
+          is_safe: false,
+          category: 'SAFETY_BLOCKED',
+          error: errMsg,
+          reasoning: 'The edit instruction or requested modification violated image content safety policies.'
+        });
       } else {
         setGlobalError(`Image Edit Failed: ${errMsg}`);
       }

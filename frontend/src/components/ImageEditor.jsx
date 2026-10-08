@@ -164,16 +164,39 @@ const ImageEditor = ({
             background: 'var(--danger-bg)',
             border: '1px solid var(--danger-border)',
             borderRadius: 'var(--radius-md)',
-            padding: '0.85rem 1rem',
+            padding: '1.25rem',
             color: 'var(--danger-text)',
             marginBottom: '1.25rem',
+            boxShadow: '0 4px 12px rgba(185, 28, 28, 0.08)'
           }}>
-            <strong style={{ display: 'block', color: 'var(--heading)', marginBottom: '0.2rem', fontSize: '0.9rem' }}>
-              Generated Edit Rejected by Safety Gate
-            </strong>
-            <span style={{ fontSize: '0.85rem' }}>
-              {editSafetyResult.error || 'The generated edit contained inappropriate content and was discarded. Previous versions remain safe.'}
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
+              <span style={{ fontSize: '1.2rem' }}>🛡️</span>
+              <strong style={{ fontSize: '1rem', color: 'var(--heading)' }}>
+                Edit Request Blocked by Safety Guardrails
+              </strong>
+            </div>
+
+            <p style={{ fontSize: '0.875rem', color: 'var(--danger-text)', lineHeight: 1.5, marginBottom: '0.75rem' }}>
+              {editSafetyResult.error || editSafetyResult.reasoning || 'The edit instruction contained restricted content (violence, nudity, explicit content, or offensive themes) and was discarded to protect content safety policies.'}
+            </p>
+
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              background: 'rgba(185, 28, 28, 0.1)',
+              border: '1px solid var(--danger-border)',
+              borderRadius: 'var(--radius-full)',
+              padding: '0.35rem 0.85rem',
+              fontSize: '0.78rem',
+              fontWeight: 600,
+              color: 'var(--danger-text)'
+            }}>
+              <span>Guardrail Category:</span>
+              <span style={{ textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
+                {editSafetyResult.category || 'PROMPT_SAFETY_FLAGGED'}
+              </span>
+            </div>
           </div>
         )}
 
