@@ -228,7 +228,7 @@ a:hover {
 .markdown-body code {
   font-family: var(--font-mono);
   background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  px solid var(--border-color);
   color: var(--primary-text);
   padding: 0.15rem 0.35rem;
   border-radius: var(--radius-sm);

@@ -51,18 +51,7 @@ const Navbar = ({ activeTab, setActiveTab, apiConnected, apiConfigured, theme, t
               <span style={{ fontWeight: 700, fontSize: '1.15rem', letterSpacing: '-0.02em', color: 'var(--heading)' }}>
                 SightAI
               </span>
-              <span style={{
-                background: 'var(--primary-glow)',
-                border: '1px solid var(--border-color)',
-                color: 'var(--primary)',
-                padding: '1px 7px',
-                borderRadius: 'var(--radius-full)',
-                fontSize: '0.7rem',
-                fontWeight: 600,
-                fontFamily: 'var(--font-mono)'
-              }}>
-
-              </span>
+              
             </div>
             <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', display: 'block' }}>
               Multimodal image analysis & AI Research Agent
