@@ -684,6 +684,7 @@ function App() {
                 isAsking={isAsking}
                 apiConfigured={apiConfigured}
                 askTimer={askTimer}
+                imagePreview={activeVersionObj?.image_base64 || imagePreview}
               />
             )}
 
